@@ -4,7 +4,6 @@ import { DataService } from './data.service';
 import { signal } from '@angular/core';
 import { Question } from './models';
 
-// Mock DataService
 class MockDataService {
   questions = signal<Question[]>([]);
   addQuestion(q: Question) {
@@ -34,47 +33,76 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the app', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should add a valid open question', () => {
-    component.newQText = 'What is 2+2?';
-    component.newQType = 'open';
-    component.addQuestion();
+  describe('Form Validation', () => {
+    it('should disable save button if question text is empty', () => {
+      component.newQText = '   ';
+      component.newQType = 'open';
+      expect(component.isSaveDisabled).toBe(true);
+    });
 
-    expect(dataService.questions().length).toBe(1);
-    expect(dataService.questions()[0].text).toBe('What is 2+2?');
-    expect(component.newQText).toBe(''); // Should reset
+    it('should disable save button if multiple choice has less than 2 options', () => {
+      component.newQText = 'Valid text';
+      component.newQType = 'multiple';
+      component.newQOptions = 'Option 1'; // Only one option
+      expect(component.isSaveDisabled).toBe(true);
+      
+      component.newQOptions = 'Option 1, Option 2'; // Two options
+      expect(component.isSaveDisabled).toBe(false);
+    });
   });
 
-  it('should not add an empty question', () => {
-    component.newQText = '   ';
-    component.addQuestion();
-    expect(dataService.questions().length).toBe(0);
+  describe('Adding Questions', () => {
+    it('should add a valid open question and reset form', () => {
+      component.newQText = 'What is 2+2?';
+      component.newQType = 'open';
+      component.addQuestion();
+
+      expect(dataService.questions().length).toBe(1);
+      expect(dataService.questions()[0].text).toBe('What is 2+2?');
+      expect(dataService.questions()[0].type).toBe('open');
+      expect(component.newQText).toBe(''); // Form reset
+    });
+
+    it('should add multiple choice question and parse options properly', () => {
+      component.newQText = 'Colors?';
+      component.newQType = 'multiple';
+      component.newQOptions = 'Red, Blue , Green,'; // Trailing comma and spaces
+      component.addQuestion();
+
+      expect(dataService.questions()[0].options).toEqual(['Red', 'Blue', 'Green']);
+    });
   });
 
-  it('should parse multiple choice options correctly', () => {
-    component.newQText = 'Colors?';
-    component.newQType = 'multiple';
-    component.newQOptions = 'Red, Blue , Green,';
-    component.addQuestion();
+  describe('Exam Assembly', () => {
+    it('should toggle selection of questions', () => {
+      const q: Question = { id: '1', text: 'Test', type: 'open' };
+      
+      component.toggleExamQuestion(q);
+      expect(component.selectedQuestions.length).toBe(1);
+      expect(component.isSelected(q)).toBe(true);
 
-    const q = dataService.questions()[0];
-    expect(q.options).toEqual(['Red', 'Blue', 'Green']);
-  });
+      component.toggleExamQuestion(q);
+      expect(component.selectedQuestions.length).toBe(0);
+      expect(component.isSelected(q)).toBe(false);
+    });
 
-  it('should toggle selection of questions for the exam', () => {
-    const q: Question = { id: '1', text: 'Test', type: 'open' };
-    
-    // Add to exam
-    component.toggleExamQuestion(q);
-    expect(component.selectedQuestions.length).toBe(1);
-    expect(component.isSelected(q)).toBe(true);
-
-    // Remove from exam
-    component.toggleExamQuestion(q);
-    expect(component.selectedQuestions.length).toBe(0);
-    expect(component.isSelected(q)).toBe(false);
+    it('should select all and deselect all', () => {
+      dataService.questions.set([
+        { id: '1', text: 'Q1', type: 'open' },
+        { id: '2', text: 'Q2', type: 'open' }
+      ]);
+      
+      // Select All
+      component.selectAll();
+      expect(component.selectedQuestions.length).toBe(2);
+      
+      // Deselect All
+      component.selectAll();
+      expect(component.selectedQuestions.length).toBe(0);
+    });
   });
 });
