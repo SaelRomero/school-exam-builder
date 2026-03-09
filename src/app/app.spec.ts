@@ -80,7 +80,7 @@ describe('AppComponent', () => {
       
       // Simulate response wrapped in markdown block
       const mockResponse = {
-        response: "```json\n[\n{ \"text\": \"Gravity?\", \"type\": \"open\" }\n]\n```"
+        response: "Here are the questions:\n[\n{ \"text\": \"Gravity?\", \"type\": \"open\" }\n]\nEnjoy!"
       };
       
       req.flush(mockResponse);

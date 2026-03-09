@@ -105,9 +105,10 @@ No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuer
         try {
           const rawResponse = response.response;
           let jsonStr = rawResponse;
-          const match = rawResponse.match(/```(?:json)?(?:\s*)([\s\S]*?)(?:\s*)```/);
-          if (match && match[1]) {
-            jsonStr = match[1];
+          const startIdx = jsonStr.indexOf('[');
+          const endIdx = jsonStr.lastIndexOf(']');
+          if (startIdx !== -1 && endIdx !== -1 && endIdx >= startIdx) {
+            jsonStr = jsonStr.substring(startIdx, endIdx + 1);
           }
           const generatedQuestions = JSON.parse(jsonStr);
           
