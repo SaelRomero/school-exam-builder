@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { timeout } from 'rxjs/operators';
 import { Question } from './models';
 import html2pdf from 'html2pdf.js';
 
@@ -105,7 +106,7 @@ Formato:
       format: 'json'
     };
 
-    this.http.post<any>('/api/ollama/api/generate', payload).subscribe({
+    this.http.post<any>('/api/ollama/api/generate', payload).pipe(timeout(35000)).subscribe({
       next: (response) => {
         try {
           const rawResponse = response.response;
