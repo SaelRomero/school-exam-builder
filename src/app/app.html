@@ -1,72 +1,190 @@
-<div class="no-print header">
-  <h1>School Exam Builder 📝</h1>
-  <nav>
-    <button (click)="activeTab = 'bank'" [class.active]="activeTab === 'bank'">Banco de Preguntas</button>
-    <button (click)="activeTab = 'exam'" [class.active]="activeTab === 'exam'">Armar Examen</button>
-  </nav>
-</div>
-
-<div class="no-print container" *ngIf="activeTab === 'bank'">
-  <h2>Nueva Pregunta</h2>
-  <div class="card">
-    <label>Texto de la pregunta:</label>
-    <input [(ngModel)]="newQText" placeholder="Ej. ¿Cuánto es 2+2?">
-    <label>Tipo:</label>
-    <select [(ngModel)]="newQType">
-      <option value="open">Abierta</option>
-      <option value="multiple">Opción Múltiple</option>
-    </select>
-    <div *ngIf="newQType === 'multiple'" style="margin-top: 10px;">
-      <label>Opciones (separadas por coma):</label>
-      <input [(ngModel)]="newQOptions" placeholder="A, B, C, D" style="width: 100%;">
+<div class="no-print min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-indigo-600 text-white shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold flex items-center gap-2">
+        <span class="text-3xl">📝</span> School Exam Builder
+      </h1>
+      <nav class="flex gap-2">
+        <button 
+          (click)="activeTab = 'bank'" 
+          [class.bg-indigo-800]="activeTab === 'bank'"
+          class="px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors font-medium">
+          Banco de Preguntas
+        </button>
+        <button 
+          (click)="activeTab = 'exam'" 
+          [class.bg-indigo-800]="activeTab === 'exam'"
+          class="px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors font-medium">
+          Armar Examen
+        </button>
+      </nav>
     </div>
-    <button (click)="addQuestion()" style="margin-top: 15px;">Guardar Pregunta</button>
-  </div>
+  </header>
 
-  <h2>Tus Preguntas</h2>
-  <ul>
-    <li *ngFor="let q of data.questions()">
-      <span><strong>{{q.text}}</strong> ({{q.type}})</span>
-      <button class="btn-danger" (click)="data.deleteQuestion(q.id)">🗑️</button>
-    </li>
-  </ul>
+  <!-- Main Content -->
+  <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-8">
+    
+    <!-- BANCO DE PREGUNTAS -->
+    <div *ngIf="activeTab === 'bank'" class="space-y-8 animate-fade-in">
+      
+      <!-- Crear Pregunta -->
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Añadir Nueva Pregunta</h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Texto de la pregunta:</label>
+            <input [(ngModel)]="newQText" placeholder="Ej. ¿Cuál es la capital de Francia?" 
+                   class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Tipo de respuesta:</label>
+              <select [(ngModel)]="newQType" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                <option value="open">Pregunta Abierta</option>
+                <option value="multiple">Opción Múltiple</option>
+              </select>
+            </div>
+            
+            <div *ngIf="newQType === 'multiple'">
+              <label class="block text-sm font-medium text-slate-700 mb-1">Opciones (separadas por coma):</label>
+              <input [(ngModel)]="newQOptions" placeholder="Madrid, Roma, Berlín, Londres" 
+                     class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+            </div>
+          </div>
+          
+          <button (click)="addQuestion()" 
+                  class="mt-2 bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm w-full md:w-auto">
+            + Guardar Pregunta
+          </button>
+        </div>
+      </section>
+
+      <!-- Lista de Preguntas -->
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Banco de Preguntas Guardadas <span class="text-sm font-normal text-slate-500">({{data.questions().length}})</span></h2>
+        
+        <div *ngIf="data.questions().length === 0" class="text-center py-8 text-slate-500 italic">
+          No hay preguntas guardadas aún. Añade algunas arriba.
+        </div>
+
+        <ul class="space-y-3">
+          <li *ngFor="let q of data.questions()" class="flex justify-between items-start p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-slate-300 transition-colors">
+            <div>
+              <p class="font-medium text-slate-800">{{q.text}}</p>
+              <p class="text-xs text-slate-500 mt-1 font-mono bg-slate-200 inline-block px-2 py-0.5 rounded">{{q.type === 'open' ? 'Abierta' : 'Múltiple'}}</p>
+              <p *ngIf="q.type === 'multiple'" class="text-sm text-slate-600 mt-2">
+                Opciones: <span class="text-slate-800">{{q.options?.join(', ')}}</span>
+              </p>
+            </div>
+            <button (click)="data.deleteQuestion(q.id)" title="Eliminar pregunta"
+                    class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-md transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- ARMAR EXAMEN -->
+    <div *ngIf="activeTab === 'exam'" class="space-y-8 animate-fade-in">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Configuracion y Seleccion -->
+        <div class="lg:col-span-2 space-y-6">
+          <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Cabecera del Examen</h2>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Título del Examen:</label>
+                <input [(ngModel)]="examTitle" 
+                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-lg">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Instrucciones generales:</label>
+                <textarea [(ngModel)]="examInstructions" rows="3"
+                          class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Seleccionar Preguntas</h2>
+            
+            <div *ngIf="data.questions().length === 0" class="text-center py-4 text-slate-500">
+              Ve al banco de preguntas para crear contenido primero.
+            </div>
+
+            <ul class="space-y-2 max-h-96 overflow-y-auto pr-2">
+              <li *ngFor="let q of data.questions()" 
+                  class="flex items-center p-3 rounded-lg border transition-all cursor-pointer"
+                  [ngClass]="isSelected(q) ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:bg-slate-50'"
+                  (click)="toggleExamQuestion(q)">
+                <input type="checkbox" [checked]="isSelected(q)" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 mr-3 pointer-events-none">
+                <span class="font-medium text-slate-800 select-none">{{q.text}}</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <!-- Resumen y Exportacion -->
+        <div class="lg:col-span-1">
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 sticky top-4">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Resumen</h2>
+            
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-600">Preguntas seleccionadas:</span>
+                <span class="text-2xl font-bold text-indigo-600">{{selectedQuestions.length}}</span>
+              </div>
+              <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-500 transition-all duration-300" 
+                     [style.width.%]="data.questions().length ? (selectedQuestions.length / data.questions().length) * 100 : 0"></div>
+              </div>
+            </div>
+
+            <button (click)="printExam()" [disabled]="selectedQuestions.length === 0"
+                    class="w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-md"
+                    [ngClass]="selectedQuestions.length > 0 ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Exportar PDF / Imprimir
+            </button>
+            <p class="text-xs text-center text-slate-500 mt-4">
+              Tip: Al imprimir, selecciona "Guardar como PDF" y deshabilita "Encabezados y pies de página" para un resultado limpio.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
 
-<div class="no-print container" *ngIf="activeTab === 'exam'">
-  <h2>Configurar Examen</h2>
-  <div class="card">
-    <label>Título:</label>
-    <input [(ngModel)]="examTitle">
-    <label>Instrucciones:</label>
-    <textarea [(ngModel)]="examInstructions"></textarea>
-  </div>
-  <h2>Seleccionar Preguntas</h2>
-  <ul class="selectable-list">
-    <li *ngFor="let q of data.questions()">
-      <label style="cursor: pointer; width: 100%; display: block;">
-        <input type="checkbox" (change)="toggleExamQuestion(q)"> {{q.text}}
-      </label>
-    </li>
-  </ul>
-  <button class="btn-print" (click)="printExam()" [disabled]="selectedQuestions.length === 0">🖨️ Exportar a PDF / Imprimir</button>
-</div>
-
-<!-- ZONA DE IMPRESIÓN -->
+<!-- ZONA DE IMPRESIÓN (Invisible en pantalla, solo en impresión) -->
 <div class="print-only exam-paper">
   <div class="exam-header">
     <h1>{{examTitle}}</h1>
-    <p><strong>Nombre del alumno:</strong> _________________________________________ <strong>Fecha:</strong> _______</p>
-    <p><strong>Instrucciones:</strong> {{examInstructions}}</p>
-    <hr>
+    <p><strong>Nombre del alumno:</strong> __________________________________________________ <strong>Fecha:</strong> _____________</p>
+    <p><strong>Grado y Grupo:</strong> _______________________ <strong>Calificación:</strong> _______ / 10</p>
+    <p style="margin-top: 15px;"><strong>Instrucciones:</strong> {{examInstructions}}</p>
+    <hr style="margin: 20px 0; border: 1px solid #000;">
   </div>
+  
   <div class="exam-body">
     <div class="q-item" *ngFor="let q of selectedQuestions; let i = index">
       <p><strong>{{i + 1}}. {{q.text}}</strong></p>
+      
       <div *ngIf="q.type === 'multiple'" class="options">
-         <div *ngFor="let opt of q.options">(&nbsp;&nbsp;) {{opt}}</div>
+         <div *ngFor="let opt of q.options" style="margin-bottom: 12px;">(&nbsp;&nbsp;&nbsp;&nbsp;) {{opt}}</div>
       </div>
+      
       <div *ngIf="q.type === 'open'" class="open-lines">
-         <br><br><br>
+         <br><br><br><br>
       </div>
     </div>
   </div>

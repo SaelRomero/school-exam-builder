@@ -1,4 +1,10 @@
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #fff; color: #0f172a; }
+@import "tailwindcss";
+
+body { 
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+  background-color: #f1f5f9; /* slate-100 */
+  color: #0f172a; /* slate-900 */
+}
 
 @media print {
   @page { margin: 2cm; }
@@ -6,7 +12,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; 
   .no-print { display: none !important; }
   .print-only { display: block !important; }
   .exam-paper { color: #000; }
-  .exam-header h1 { text-align: center; margin-bottom: 20px; font-size: 24pt; }
+  .exam-header h1 { text-align: center; margin-bottom: 20px; font-size: 24pt; font-weight: bold; }
   .exam-header p { font-size: 12pt; margin: 10px 0; }
   .q-item { margin-top: 25px; page-break-inside: avoid; font-size: 12pt; }
   .options { margin-left: 20px; margin-top: 10px; }
