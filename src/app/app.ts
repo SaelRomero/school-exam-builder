@@ -94,7 +94,7 @@ Devuelve ÚNICAMENTE un JSON válido con este arreglo:
 No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuera del JSON crudo. Solo el arreglo de objetos.`;
 
     const payload = {
-      model: 'minimax-m2.5:cloud',
+      model: 'qwen3.5:397b-cloud',
       prompt: prompt,
       stream: false,
       format: 'json'
@@ -104,7 +104,12 @@ No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuer
       next: (response) => {
         try {
           const rawResponse = response.response;
-          const generatedQuestions = JSON.parse(rawResponse);
+          let jsonStr = rawResponse;
+          const match = rawResponse.match(/```(?:json)?(?:\s*)([\s\S]*?)(?:\s*)```/);
+          if (match && match[1]) {
+            jsonStr = match[1];
+          }
+          const generatedQuestions = JSON.parse(jsonStr);
           
           if (Array.isArray(generatedQuestions)) {
             let count = 0;
