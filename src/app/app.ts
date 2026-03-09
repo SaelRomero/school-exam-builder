@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { DataService } from './data.service';
 import { Question } from './models';
 import html2pdf from 'html2pdf.js';
 
@@ -13,9 +12,10 @@ import html2pdf from 'html2pdf.js';
   templateUrl: './app.html'
 })
 export class AppComponent {
-  data = inject(DataService);
   http = inject(HttpClient);
-  activeTab = 'bank';
+  
+  examTitle = '';
+  examQuestions: Question[] = [];
   
   newQText = '';
   newQType: 'open' | 'multiple' = 'open';
@@ -25,10 +25,9 @@ export class AppComponent {
   aiQuantity = 3;
   isGenerating = false;
   aiError = '';
-
-  examTitle = 'Examen de Evaluación';
-  examInstructions = 'Lee con atención cada una de las preguntas y responde claramente en el espacio indicado. No se permiten tachaduras.';
-  selectedQuestions: Question[] = [];
+  
+  toastMessage = '';
+  toastTimeout: any;
 
   get isSaveDisabled(): boolean {
     const isTextEmpty = !this.newQText || !this.newQText.trim();
@@ -38,7 +37,15 @@ export class AppComponent {
     return isTextEmpty || options.length < 2;
   }
 
-  addQuestion() {
+  showToast(msg: string) {
+    this.toastMessage = msg;
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage = '';
+    }, 4000);
+  }
+
+  addManualQuestion() {
     if (this.isSaveDisabled) return;
     
     let options: string[] = [];
@@ -53,9 +60,14 @@ export class AppComponent {
       options: options.length > 0 ? options : undefined
     };
     
-    this.data.addQuestion(q);
+    this.examQuestions.push(q);
     this.newQText = '';
     this.newQOptions = '';
+    this.showToast('Pregunta añadida manualmente.');
+  }
+
+  removeQuestion(id: string) {
+    this.examQuestions = this.examQuestions.filter(q => q.id !== id);
   }
 
   generateAIQuestions() {
@@ -94,6 +106,7 @@ No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuer
           const generatedQuestions = JSON.parse(rawResponse);
           
           if (Array.isArray(generatedQuestions)) {
+            let count = 0;
             generatedQuestions.forEach((q: any) => {
                if (q.text && q.type) {
                  const isMultiple = q.type === 'multiple' || (Array.isArray(q.options) && q.options.length > 1);
@@ -103,10 +116,14 @@ No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuer
                    type: isMultiple ? 'multiple' : 'open',
                    options: isMultiple ? q.options : undefined
                  };
-                 this.data.addQuestion(newQ);
+                 this.examQuestions.push(newQ);
+                 count++;
                }
             });
             this.aiTopic = '';
+            if (count > 0) {
+              this.showToast(`¡Completado! Se generaron ${count} preguntas con IA.`);
+            }
           } else {
             throw new Error("Formato inválido: se esperaba un arreglo");
           }
@@ -124,29 +141,8 @@ No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuer
     });
   }
 
-  isSelected(q: Question): boolean {
-    return this.selectedQuestions.some(sq => sq.id === q.id);
-  }
-
-  toggleExamQuestion(q: Question) {
-    if (this.isSelected(q)) {
-      this.selectedQuestions = this.selectedQuestions.filter(sq => sq.id !== q.id);
-    } else {
-      this.selectedQuestions.push(q);
-    }
-  }
-
-  selectAll() {
-    const allQuestions = this.data.questions();
-    if (this.selectedQuestions.length === allQuestions.length) {
-      this.selectedQuestions = []; 
-    } else {
-      this.selectedQuestions = [...allQuestions]; 
-    }
-  }
-
-  printExam() {
-    if (this.selectedQuestions.length === 0) return;
+  exportExam() {
+    if (this.examQuestions.length === 0) return;
     
     const element = document.getElementById('exam-content');
     if (!element) {
@@ -154,9 +150,10 @@ No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuer
       return;
     }
 
+    const title = this.examTitle ? this.examTitle.trim().replace(/\s+/g, '_') : 'Examen';
     const opt = {
       margin:       15,
-      filename:     `${this.examTitle.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+      filename:     `${title}_${new Date().toISOString().split('T')[0]}.pdf`,
       image:        { type: 'jpeg' as const, quality: 0.98 },
       html2canvas:  { scale: 2, useCORS: true },
       jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' as const }
@@ -166,6 +163,7 @@ No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuer
     
     html2pdf().set(opt).from(element).save().then(() => {
       element.style.display = 'none';
+      this.showToast('El examen se exportó como PDF.');
     }).catch((err: any) => {
       console.error('Error al generar PDF:', err);
       element.style.display = 'none';

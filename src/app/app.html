@@ -1,244 +1,166 @@
 <div class="no-print min-h-screen flex flex-col bg-[#FAFAFA] text-[#111]">
-  <!-- Navigation Header (Vercel Style) -->
+  <!-- Navigation Header -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div class="flex items-center gap-3">
         <div class="bg-black text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-lg">📝</div>
         <h1 class="text-xl font-bold tracking-tight">Exam Builder</h1>
       </div>
       
-      <nav class="flex gap-4 w-full sm:w-auto overflow-x-auto">
-        <button (click)="activeTab = 'bank'"
-          [class.text-black]="activeTab === 'bank'"
-          [class.border-black]="activeTab === 'bank'"
-          [class.text-gray-500]="activeTab !== 'bank'"
-          [class.border-transparent]="activeTab !== 'bank'"
-          class="whitespace-nowrap px-1 py-2 border-b-2 hover:text-black transition-colors font-medium text-sm">
-          Preguntas
+      <div class="flex gap-3 w-full sm:w-auto">
+        <button (click)="exportExam()" [disabled]="examQuestions.length === 0"
+          class="w-full sm:w-auto bg-black text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition-all shadow-sm flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Exportar PDF
         </button>
-        <button (click)="activeTab = 'build'"
-          [class.text-black]="activeTab === 'build'"
-          [class.border-black]="activeTab === 'build'"
-          [class.text-gray-500]="activeTab !== 'build'"
-          [class.border-transparent]="activeTab !== 'build'"
-          class="whitespace-nowrap px-1 py-2 border-b-2 hover:text-black transition-colors font-medium text-sm">
-          Construir Examen
-        </button>
-      </nav>
+      </div>
     </div>
   </header>
 
   <!-- Main Content Area -->
-  <main class="flex-grow max-w-5xl mx-auto w-full px-6 py-8">
+  <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8">
     
-    <!-- Tab 1: Question Bank -->
-    @if (activeTab === 'bank') {
-      <div class="space-y-8 animate-fade-in">
-        
-        <!-- AI Generation Card -->
-        <section class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 sm:p-8 rounded-xl shadow-sm border border-indigo-100 transition-all mb-8">
-          <h2 class="text-lg font-semibold tracking-tight text-indigo-900 mb-6 flex items-center gap-2">
-            <span>✨</span> Generar con Inteligencia Artificial
-          </h2>
-          <div class="space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-medium text-indigo-900 mb-2">Tema o Instrucción:</label>
-                <input type="text" [(ngModel)]="aiTopic" placeholder="Ej. La Revolución Mexicana, Ecuaciones de 1er grado..."
-                  class="w-full px-4 py-3 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm placeholder-indigo-300">
+    <!-- Exam Title Section -->
+    <div class="mb-8 bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
+      <label class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">Título del Examen</label>
+      <input type="text" [(ngModel)]="examTitle" placeholder="Ej. Examen Parcial de Matemáticas..."
+        class="w-full text-2xl sm:text-3xl font-bold text-gray-900 placeholder-gray-300 border-none focus:ring-0 px-0 bg-transparent outline-none">
+    </div>
+
+    <!-- Feedback Toast -->
+    @if (toastMessage) {
+      <div class="mb-6 p-4 bg-green-50 text-green-800 border border-green-200 rounded-lg flex items-center gap-3 animate-fade-in shadow-sm">
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span class="font-medium text-sm">{{toastMessage}}</span>
+      </div>
+    }
+
+    <!-- Current Questions in Exam -->
+    <div class="space-y-4 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold tracking-tight text-gray-900">Preguntas del Examen</h2>
+        <span class="text-xs font-medium bg-gray-100 text-gray-600 py-1 px-2.5 rounded-md">{{examQuestions.length}} preguntas</span>
+      </div>
+
+      @if (examQuestions.length === 0) {
+        <div class="text-center py-16 bg-gray-50/50 rounded-xl border-2 border-dashed border-gray-200">
+          <div class="text-gray-300 mb-4">
+            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <p class="text-gray-500 font-medium">El examen está vacío.</p>
+          <p class="text-sm text-gray-400 mt-1">Añade preguntas manualmente o diséñalas con Inteligencia Artificial.</p>
+        </div>
+      } @else {
+        <div class="space-y-3">
+          @for (q of examQuestions; track q.id; let i = $index) {
+            <div class="p-5 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm bg-white transition-all group flex flex-col sm:flex-row justify-between gap-4">
+              <div class="flex-grow">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-xs font-bold text-gray-400">#{{i + 1}}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-500 uppercase tracking-widest">
+                    {{q.type === 'open' ? 'Abierta' : 'Múltiple'}}
+                  </span>
+                </div>
+                <p class="text-sm text-gray-900 font-medium leading-relaxed">{{q.text}}</p>
+                @if (q.type === 'multiple' && q.options) {
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    @for (opt of q.options; track opt) {
+                      <span class="text-xs bg-white border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md shadow-sm">{{opt}}</span>
+                    }
+                  </div>
+                }
               </div>
-              <div>
-                <label class="block text-sm font-medium text-indigo-900 mb-2">Cantidad:</label>
-                <input type="number" [(ngModel)]="aiQuantity" min="1" max="10"
-                  class="w-full px-4 py-3 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm">
-              </div>
+              <button (click)="removeQuestion(q.id)" class="text-gray-300 hover:text-red-500 p-2 sm:self-start rounded-md hover:bg-red-50 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+              </button>
             </div>
-            @if (aiError) {
-              <div class="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
-                {{aiError}}
-              </div>
-            }
-            <div class="pt-2 flex justify-end">
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Actions / Add Questions Tools -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- AI Generation Tool -->
+      <section class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 sm:p-7 rounded-xl shadow-sm border border-indigo-100 transition-all">
+        <h3 class="text-base font-semibold text-indigo-900 mb-5 flex items-center gap-2">
+          <span>✨</span> Generar con IA
+        </h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-indigo-900/70 uppercase tracking-wider mb-1.5">Tema o Instrucción:</label>
+            <input type="text" [(ngModel)]="aiTopic" placeholder="Ej. Revolución Mexicana, Fracciones..."
+              class="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm placeholder-indigo-300">
+          </div>
+          <div class="flex gap-4">
+            <div class="w-1/3">
+              <label class="block text-xs font-semibold text-indigo-900/70 uppercase tracking-wider mb-1.5">Cant.</label>
+              <input type="number" [(ngModel)]="aiQuantity" min="1" max="10"
+                class="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm">
+            </div>
+            <div class="w-2/3 flex items-end">
               <button (click)="generateAIQuestions()" [disabled]="isGenerating || !aiTopic"
-                class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transition-all shadow-sm flex items-center justify-center gap-2">
+                class="w-full bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:bg-indigo-300 transition-all shadow-sm flex items-center justify-center gap-2">
                 @if (isGenerating) {
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Generando...
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  Creando...
                 } @else {
-                  <span>Generar Preguntas ✨</span>
+                  <span>Generar ✨</span>
                 }
               </button>
             </div>
           </div>
-        </section>
-
-        <!-- Add Question Card -->
-        <section class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200 transition-all">
-          <h2 class="text-lg font-semibold tracking-tight text-gray-900 mb-6">Añadir Nueva Pregunta</h2>
-          
-          <div class="space-y-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Texto de la pregunta:</label>
-              <textarea [(ngModel)]="newQText" rows="3" placeholder="Ej. ¿Cuál es la capital de Francia?"
-                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black focus:border-black outline-none transition-all resize-none text-sm placeholder-gray-400"></textarea>
+          @if (aiError) {
+            <div class="p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200 mt-2">
+              {{aiError}}
             </div>
+          }
+        </div>
+      </section>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de respuesta:</label>
-                <div class="relative">
-                  <select [(ngModel)]="newQType" class="appearance-none w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black focus:border-black outline-none transition-all text-sm cursor-pointer">
-                    <option value="open">Abierta</option>
-                    <option value="multiple">Opción Múltiple</option>
-                  </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                  </div>
-                </div>
-              </div>
-
-              @if (newQType === 'multiple') {
-                <div class="animate-fade-in">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Opciones (separadas por coma):</label>
-                  <input type="text" [(ngModel)]="newQOptions" placeholder="Opción A, Opción B, Opción C"
-                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black focus:border-black outline-none transition-all text-sm placeholder-gray-400">
-                  <p class="text-xs text-gray-500 mt-2">Añade al menos dos opciones.</p>
-                </div>
-              }
+      <!-- Manual Question Tool -->
+      <section class="bg-white p-6 sm:p-7 rounded-xl shadow-sm border border-gray-200 transition-all">
+        <h3 class="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
+          Añadir Manualmente
+        </h3>
+        <div class="space-y-4">
+          <div>
+            <textarea [(ngModel)]="newQText" rows="2" placeholder="Escribe tu pregunta aquí..."
+              class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black outline-none transition-all resize-none text-sm placeholder-gray-400"></textarea>
+          </div>
+          <div class="flex gap-4">
+            <div class="w-1/2">
+              <select [(ngModel)]="newQType" class="appearance-none w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black outline-none transition-all text-sm cursor-pointer">
+                <option value="open">Abierta</option>
+                <option value="multiple">Opción Múltiple</option>
+              </select>
             </div>
-
-            <div class="pt-4 flex justify-end">
-              <button (click)="addQuestion()" [disabled]="isSaveDisabled"
-                class="w-full sm:w-auto bg-black text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all shadow-sm flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                Guardar Pregunta
+            <div class="w-1/2">
+              <button (click)="addManualQuestion()" [disabled]="isSaveDisabled"
+                class="w-full bg-white border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 transition-all shadow-sm">
+                Añadir
               </button>
             </div>
           </div>
-        </section>
-
-        <!-- Question List -->
-        <section class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-lg font-semibold tracking-tight text-gray-900">Banco de Preguntas</h2>
-            <span class="text-xs font-medium bg-gray-100 text-gray-600 py-1 px-2.5 rounded-md">{{data.questions().length}} guardadas</span>
-          </div>
-
-          @if (data.questions().length === 0) {
-            <div class="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-              <div class="text-gray-400 mb-3">
-                <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-              </div>
-              <p class="text-sm text-gray-500 font-medium">Aún no hay preguntas.</p>
-              <p class="text-xs text-gray-400 mt-1">Añade tu primera pregunta arriba para comenzar.</p>
-            </div>
-          } @else {
-            <div class="space-y-4">
-              @for (q of data.questions(); track q.id) {
-                <div class="p-4 sm:p-5 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm bg-white transition-all group flex flex-col sm:flex-row justify-between gap-4">
-                  <div class="flex-grow">
-                    <div class="flex items-center gap-2 mb-2">
-                      <span class="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
-                        {{q.type === 'open' ? 'Abierta' : 'Múltiple'}}
-                      </span>
-                    </div>
-                    <p class="text-sm text-gray-900 font-medium leading-relaxed">{{q.text}}</p>
-                    @if (q.type === 'multiple') {
-                      <div class="mt-3 flex flex-wrap gap-2">
-                        @for (opt of q.options; track opt) {
-                          <span class="text-xs bg-white border border-gray-200 text-gray-600 px-2.5 py-1 rounded-md">{{opt}}</span>
-                        }
-                      </div>
-                    }
-                  </div>
-                  <button (click)="data.deleteQuestion(q.id)" class="text-gray-400 hover:text-red-600 p-2 sm:self-start rounded-md hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
-              }
+          @if (newQType === 'multiple') {
+            <div class="animate-fade-in pt-2">
+              <input type="text" [(ngModel)]="newQOptions" placeholder="Opciones (separadas por coma)"
+                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black outline-none transition-all text-sm placeholder-gray-400">
             </div>
           }
-        </section>
-      </div>
-    }
+        </div>
+      </section>
 
-    <!-- Tab 2: Build Exam -->
-    @if (activeTab === 'build') {
-      <div class="space-y-8 animate-fade-in">
-        
-        <section class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div>
-              <h2 class="text-lg font-semibold tracking-tight text-gray-900">Configuración del Examen</h2>
-              <p class="text-sm text-gray-500 mt-1">Selecciona las preguntas que deseas incluir</p>
-            </div>
-            <button (click)="printExam()" [disabled]="selectedQuestions.length === 0"
-              class="w-full sm:w-auto bg-black text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all shadow-sm flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Exportar PDF
-            </button>
-          </div>
-
-          <div class="space-y-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Título del Examen:</label>
-              <input type="text" [(ngModel)]="examTitle" placeholder="Ej. Examen Parcial - Matemáticas"
-                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black focus:border-black outline-none transition-all text-sm placeholder-gray-400">
-            </div>
-
-            <div>
-              <h3 class="text-sm font-medium text-gray-700 mb-3 flex items-center justify-between">
-                <span>Seleccionar Preguntas</span>
-                <span class="text-xs font-normal text-gray-500">{{selectedQuestions.length}} de {{data.questions().length}} seleccionadas</span>
-              </h3>
-              
-              @if (data.questions().length === 0) {
-                <div class="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                  <p class="text-sm text-gray-500">Agrega preguntas en la pestaña "Preguntas" primero.</p>
-                </div>
-              } @else {
-                <div class="space-y-3">
-                  @for (q of data.questions(); track q.id) {
-                    <label class="flex items-start gap-4 p-4 border rounded-lg cursor-pointer transition-all hover:bg-gray-50"
-                      [class.border-black]="isSelected(q)"
-                      [class.bg-gray-50]="isSelected(q)"
-                      [class.border-gray-200]="!isSelected(q)">
-                      <div class="pt-0.5">
-                        <input type="checkbox"
-                          [checked]="isSelected(q)"
-                          (change)="toggleExamQuestion(q)"
-                          class="w-4 h-4 text-black bg-white border-gray-300 rounded focus:ring-black focus:ring-2 transition-all cursor-pointer">
-                      </div>
-                      <div class="flex-grow">
-                        <p class="text-sm font-medium" [class.text-gray-900]="isSelected(q)" [class.text-gray-700]="!isSelected(q)">
-                          {{q.text}}
-                        </p>
-                        <span class="inline-block mt-1 text-[11px] font-medium px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 uppercase tracking-wider">
-                          {{q.type === 'open' ? 'Abierta' : 'Múltiple'}}
-                        </span>
-                      </div>
-                    </label>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-        </section>
-      </div>
-    }
+    </div>
   </main>
 
-  <footer class="mt-auto py-6 text-center text-xs text-gray-400 border-t border-gray-200 bg-white">
-    <p>School Exam Builder &copy; 2026 | Diseño UI Avanzado</p>
+  <footer class="mt-auto py-8 text-center text-xs text-gray-400">
+    <p>School Exam Builder &copy; 2026 | Diseño UI/UX Optimizado</p>
   </footer>
 </div>
 
@@ -259,7 +181,7 @@
   </div>
 
   <div style="margin-bottom: 40px;">
-    @for (q of selectedQuestions; track q.id; let i = $index) {
+    @for (q of examQuestions; track q.id; let i = $index) {
       <div style="margin-bottom: 32px; break-inside: avoid;">
         <p style="font-size: 14px; font-weight: 600; margin: 0 0 12px 0; line-height: 1.5;">
           {{i + 1}}. {{q.text}}
@@ -273,9 +195,9 @@
           </div>
         }
         
-        @if (q.type === 'multiple') {
+        @if (q.type === 'multiple' && q.options) {
           <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; padding-left: 16px;">
-            @for (opt of q.options; track opt; let j = $index) {
+            @for (opt of q.options; track opt) {
               <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 14px; height: 14px; border: 1px solid #000; border-radius: 50%;"></div>
                 <span style="font-size: 14px;">{{opt}}</span>
@@ -284,10 +206,6 @@
           </div>
         }
       </div>
-    }
-    
-    @if (selectedQuestions.length === 0) {
-      <p style="color: #6b7280; font-style: italic; font-size: 14px;">No hay preguntas seleccionadas para este examen.</p>
     }
   </div>
 </div>
