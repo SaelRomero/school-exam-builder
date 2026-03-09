@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Agregamos la ruta del node que usamos nosotros en la maquina para que Jenkins lo vea
+        PATH = "/home/argus/.nvm/versions/node/v22.22.1/bin:${env.PATH}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,14 +13,10 @@ pipeline {
             }
         }
 
-        stage('Build Angular App') {
-            agent {
-                docker {
-                    image 'node:22-alpine'
-                    args '-u root'
-                }
-            }
+        stage('Install Dependencies & Build') {
             steps {
+                echo 'Checking Node version...'
+                sh 'node -v'
                 echo 'Installing dependencies...'
                 sh 'npm install'
                 echo 'Building for production...'
