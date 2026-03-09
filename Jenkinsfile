@@ -20,7 +20,7 @@ pipeline {
                 echo 'Installing dependencies...'
                 sh 'npm install'
                 echo 'Building for production...'
-                sh 'npx @angular/cli build'
+                sh 'npx @angular/cli build --base-href /exam-creator/'
             }
         }
 
