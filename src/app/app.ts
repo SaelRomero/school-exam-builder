@@ -22,6 +22,8 @@ export class AppComponent {
   newQText = '';
   newQType: 'open' | 'multiple' = 'open';
   newQOptions = '';
+  newQAnswer = '';
+  showAnswersInPdf = false;
 
   aiTopic = '';
   aiQuantity = 3;
@@ -59,12 +61,14 @@ export class AppComponent {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       text: this.newQText.trim(),
       type: this.newQType,
-      options: options.length > 0 ? options : undefined
+      options: options.length > 0 ? options : undefined,
+      answer: this.newQAnswer.trim() || undefined
     };
     
     this.examQuestions.set([...this.examQuestions(), q]);
     this.newQText = '';
     this.newQOptions = '';
+    this.newQAnswer = '';
     this.showToast('Pregunta añadida manualmente.');
   }
 
@@ -90,12 +94,14 @@ Formato:
   {
     "text": "¿Pregunta abierta?",
     "type": "open",
-    "options": []
+    "options": [],
+    "answer": "Respuesta correcta aquí"
   },
   {
     "text": "¿Pregunta múltiple?",
     "type": "multiple",
-    "options": ["Opcion 1", "Opcion 2"]
+    "options": ["Opcion 1", "Opcion 2"],
+    "answer": "Opcion 1"
   }
 ]`;
 
@@ -139,7 +145,8 @@ Formato:
                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                    text: q.text,
                    type: isMultiple ? 'multiple' : 'open',
-                   options: isMultiple ? q.options : undefined
+                   options: isMultiple ? q.options : undefined,
+                   answer: q.answer
                  };
                  this.examQuestions.set([...this.examQuestions(), newQ]);
                  count++;
@@ -166,8 +173,10 @@ Formato:
     });
   }
 
-  exportExam() {
+  exportExam(withAnswers: boolean = false) {
     if (this.examQuestions().length === 0) return;
+    this.showAnswersInPdf = withAnswers;
+    setTimeout(() => {
     
     const element = document.getElementById('exam-content');
     if (!element) {
@@ -194,5 +203,6 @@ Formato:
       element.style.display = 'none';
       window.print();
     });
+    }, 100);
   }
 }
