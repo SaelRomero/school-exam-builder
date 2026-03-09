@@ -178,51 +178,51 @@
 </div>
 
 <!-- Printable Exam View (Hidden in normal mode) -->
-<div id="exam-content" class="print-only" style="display: none; width: 750px; padding: 20px 30px; background: white; color: black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-  <div style="margin-bottom: 25px;">
-    <h1 style="text-align: center; font-size: 26px; font-weight: bold; margin: 0 0 25px 0; text-transform: uppercase;">{{examTitle || 'Examen de Evaluación'}}</h1>
+<div id="exam-content" class="print-only" style="display: none; width: 100%; max-width: 800px; box-sizing: border-box; padding: 15px 20px; background: white; color: black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+  <div style="margin-bottom: 20px;">
+    <h1 style="text-align: center; font-size: 22px; font-weight: bold; margin: 0 0 20px 0; text-transform: uppercase;">{{examTitle || 'Examen de Evaluación'}}</h1>
     
-    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 15px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px;">
       <div style="display: flex; gap: 10px; flex-grow: 1;">
-        <span style="font-weight: bold;">Nombre del alumno:</span>
-        <div style="border-bottom: 1px solid #000; flex-grow: 1; margin-right: 40px;"></div>
+        <span style="font-weight: bold; white-space: nowrap;">Nombre del alumno:</span>
+        <div style="border-bottom: 1px solid #000; flex-grow: 1; margin-right: 30px;"></div>
       </div>
-      <div style="display: flex; gap: 10px; width: 200px;">
+      <div style="display: flex; gap: 10px; width: 180px; flex-shrink: 0;">
         <span style="font-weight: bold;">Fecha:</span>
         <div style="border-bottom: 1px solid #000; flex-grow: 1;"></div>
       </div>
     </div>
 
     @if (examInstructions) {
-      <div style="background-color: #ffffff; border: 2px solid #000000; border-radius: 8px; padding: 16px; font-size: 14px; color: #000000; line-height: 1.6; word-wrap: break-word; white-space: pre-wrap; margin-bottom: 10px;">
-        <span style="font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">Instrucciones Generales:</span>
+      <div style="background-color: #ffffff; border: 2px solid #000000; border-radius: 6px; padding: 12px 15px; font-size: 13px; color: #000000; line-height: 1.5; word-wrap: break-word; word-break: break-word; white-space: pre-wrap; margin-bottom: 5px;">
+        <span style="font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px;">Instrucciones Generales:</span>
         {{examInstructions}}
       </div>
     }
   </div>
 
-  <div style="margin-bottom: 20px;">
+  <div>
     @for (q of examQuestions(); track q.id; let i = $index) {
-      <div style="margin-bottom: 35px; break-inside: avoid; page-break-inside: avoid;">
-        <p style="font-size: 15px; font-weight: bold; margin: 0 0 15px 0; line-height: 1.5; text-align: justify;">
+      <div style="margin-bottom: 25px; break-inside: avoid; page-break-inside: avoid; width: 100%; box-sizing: border-box;">
+        <p style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; line-height: 1.4; text-align: left; word-wrap: break-word; word-break: break-word; white-space: pre-wrap;">
           {{i + 1}}. {{q.text}}
         </p>
         
         @if (q.type === 'open') {
-          <div style="margin-top: 20px;">
-            <div style="border-bottom: 1px solid #9ca3af; height: 35px; margin-bottom: 5px;"></div>
-            <div style="border-bottom: 1px solid #9ca3af; height: 35px; margin-bottom: 5px;"></div>
-            <div style="border-bottom: 1px solid #9ca3af; height: 35px;"></div>
+          <div style="margin-top: 15px; width: 100%;">
+            <div style="border-bottom: 1px solid #4b5563; height: 30px; margin-bottom: 5px; width: 100%;"></div>
+            <div style="border-bottom: 1px solid #4b5563; height: 30px; margin-bottom: 5px; width: 100%;"></div>
+            <div style="border-bottom: 1px solid #4b5563; height: 30px; width: 100%;"></div>
           </div>
         }
         
         @if (q.type === 'multiple' && q.options) {
-          <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px; padding-left: 10px;">
+          <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; padding-left: 10px;">
             @for (opt of q.options; track opt; let j = $index) {
-              <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="width: 18px; height: 18px; border: 2px solid #000; border-radius: 50%; flex-shrink: 0;"></div>
-                <span style="font-size: 15px; font-weight: bold; width: 25px;">{{ ['A)', 'B)', 'C)', 'D)', 'E)', 'F)'][j] || '○' }}</span>
-                <span style="font-size: 15px; line-height: 1.4;">{{opt}}</span>
+              <div style="display: flex; align-items: flex-start; gap: 12px; word-wrap: break-word;">
+                <div style="width: 16px; height: 16px; border: 2px solid #000; border-radius: 50%; flex-shrink: 0; margin-top: 2px;"></div>
+                <span style="font-size: 14px; font-weight: bold; width: 22px; flex-shrink: 0;">{{ ['A)', 'B)', 'C)', 'D)', 'E)', 'F)'][j] || '○' }}</span>
+                <span style="font-size: 14px; line-height: 1.4; word-wrap: break-word; word-break: break-word; flex-grow: 1;">{{opt}}</span>
               </div>
             }
           </div>
