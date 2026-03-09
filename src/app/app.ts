@@ -15,6 +15,7 @@ export class AppComponent {
   http = inject(HttpClient);
   
   examTitle = '';
+  examInstructions = 'Lee con atención cada una de las preguntas y responde claramente en el espacio indicado. No se permiten tachaduras.';
   examQuestions: Question[] = [];
   
   newQText = '';
@@ -93,7 +94,7 @@ Devuelve ÚNICAMENTE un JSON válido con este arreglo:
 No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuera del JSON crudo. Solo el arreglo de objetos.`;
 
     const payload = {
-      model: 'qwen3.5:397b-cloud',
+      model: 'minimax-m2.5:cloud',
       prompt: prompt,
       stream: false,
       format: 'json'
