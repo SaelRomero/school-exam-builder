@@ -77,21 +77,26 @@ export class AppComponent {
     this.isGenerating = true;
     this.aiError = '';
 
-    const prompt = `Actúa como un profesor experto. Genera exactamente ${this.aiQuantity} preguntas sobre el tema "${this.aiTopic}". 
-Devuelve ÚNICAMENTE un JSON válido con este arreglo:
+    const prompt = `Actúa como un profesor experto. Genera exactamente ${this.aiQuantity} preguntas sobre el tema "${this.aiTopic}".
+
+REGLA ESTRICTA E INQUEBRANTABLE:
+Tu respuesta DEBE empezar con '[' y terminar con ']'.
+Cero saludos. Cero despedidas. Cero explicaciones. Cero Markdown.
+SOLO JSON CRUDO.
+
+Formato:
 [
   {
-    "text": "Texto de la pregunta",
+    "text": "¿Pregunta abierta?",
     "type": "open",
     "options": []
   },
   {
-    "text": "Texto de la pregunta de opcion multiple",
+    "text": "¿Pregunta múltiple?",
     "type": "multiple",
-    "options": ["opcion1", "opcion2", "opcion3"]
+    "options": ["Opcion 1", "Opcion 2"]
   }
-]
-No incluyas markdown (como \`\`\`json), ni explicaciones ni texto adicional fuera del JSON crudo. Solo el arreglo de objetos.`;
+]`;
 
     const payload = {
       model: 'minimax-m2.5:cloud',
