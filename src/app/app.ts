@@ -109,12 +109,25 @@ Formato:
     this.http.post<any>('/api/ollama/api/generate', payload).pipe(timeout(35000)).subscribe({
       next: (response) => {
         try {
-          const rawResponse = response.response;
+          // Si por el Content-Type text/plain Angular no lo parseó como objeto, lo hacemos manual.
+          const resObj = typeof response === 'string' ? JSON.parse(response) : response;
+          const rawResponse = resObj.response;
+          
+          if (!rawResponse) {
+             throw new Error("No se encontró la propiedad 'response' en el JSON devuelto por Ollama");
+          }
+          
           let jsonStr = rawResponse;
-          const startIdx = jsonStr.indexOf('[');
-          const endIdx = jsonStr.lastIndexOf(']');
-          if (startIdx !== -1 && endIdx !== -1 && endIdx >= startIdx) {
-            jsonStr = jsonStr.substring(startIdx, endIdx + 1);
+          const match = jsonStr.match(/\[\s*\{[\s\S]*\}\s*\]/);
+          if (match) {
+            jsonStr = match[0];
+          } else {
+            // Fallback por si acaso es un arreglo vacío o formato raro
+            const startIdx = jsonStr.indexOf('[');
+            const endIdx = jsonStr.lastIndexOf(']');
+            if (startIdx !== -1 && endIdx !== -1 && endIdx >= startIdx) {
+              jsonStr = jsonStr.substring(startIdx, endIdx + 1);
+            }
           }
           const generatedQuestions = JSON.parse(jsonStr);
           
