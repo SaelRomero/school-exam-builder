@@ -32,8 +32,8 @@ describe('AppComponent', () => {
       component.newQType = 'open';
       component.addManualQuestion();
 
-      expect(component.examQuestions.length).toBe(1);
-      expect(component.examQuestions[0].text).toBe('Manual question?');
+      expect(component.examQuestions().length).toBe(1);
+      expect(component.examQuestions()[0].text).toBe('Manual question?');
       expect(component.toastMessage).toContain('manualmente');
     });
   });
@@ -66,9 +66,9 @@ describe('AppComponent', () => {
       req.flush(mockResponse);
 
       expect(component.isGenerating).toBe(false);
-      expect(component.examQuestions.length).toBe(2);
-      expect(component.examQuestions[0].text).toBe('Q1');
-      expect(component.examQuestions[1].text).toBe('Q2');
+      expect(component.examQuestions().length).toBe(2);
+      expect(component.examQuestions()[0].text).toBe('Q1');
+      expect(component.examQuestions()[1].text).toBe('Q2');
       expect(component.toastMessage).toContain('generaron 2');
     });
 
@@ -86,8 +86,8 @@ describe('AppComponent', () => {
       req.flush(mockResponse);
 
       expect(component.isGenerating).toBe(false);
-      expect(component.examQuestions.length).toBe(1);
-      expect(component.examQuestions[0].text).toBe('Gravity?');
+      expect(component.examQuestions().length).toBe(1);
+      expect(component.examQuestions()[0].text).toBe('Gravity?');
     });
 
     it('should handle network error gracefully', () => {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +17,7 @@ export class AppComponent {
   
   examTitle = '';
   examInstructions = 'Lee con atención cada una de las preguntas y responde claramente en el espacio indicado. No se permiten tachaduras.';
-  examQuestions: Question[] = [];
+  examQuestions = signal<Question[]>([]);
   
   newQText = '';
   newQType: 'open' | 'multiple' = 'open';
@@ -62,14 +62,14 @@ export class AppComponent {
       options: options.length > 0 ? options : undefined
     };
     
-    this.examQuestions.push(q);
+    this.examQuestions.set([...this.examQuestions(), q]);
     this.newQText = '';
     this.newQOptions = '';
     this.showToast('Pregunta añadida manualmente.');
   }
 
   removeQuestion(id: string) {
-    this.examQuestions = this.examQuestions.filter(q => q.id !== id);
+    this.examQuestions.set(this.examQuestions().filter(q => q.id !== id));
   }
 
   generateAIQuestions() {
@@ -141,7 +141,7 @@ Formato:
                    type: isMultiple ? 'multiple' : 'open',
                    options: isMultiple ? q.options : undefined
                  };
-                 this.examQuestions.push(newQ);
+                 this.examQuestions.set([...this.examQuestions(), newQ]);
                  count++;
                }
             });
@@ -154,7 +154,7 @@ Formato:
           }
         } catch (e: any) {
           console.error("Error parseando respuesta de IA:", e);
-          this.aiError = 'Error interpretando respuesta: ' + (e.message || e.toString());
+          this.aiError = 'Error interpretando (JS): ' + (e.message || e.toString()) + ' | Texto crudo: ' + (response ? JSON.stringify(response).substring(0, 50) : 'vacio');
         }
         this.isGenerating = false;
       },
@@ -167,7 +167,7 @@ Formato:
   }
 
   exportExam() {
-    if (this.examQuestions.length === 0) return;
+    if (this.examQuestions().length === 0) return;
     
     const element = document.getElementById('exam-content');
     if (!element) {
