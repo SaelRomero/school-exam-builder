@@ -35,6 +35,46 @@
     @if (activeTab === 'bank') {
       <div class="space-y-8 animate-fade-in">
         
+        <!-- AI Generation Card -->
+        <section class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 sm:p-8 rounded-xl shadow-sm border border-indigo-100 transition-all mb-8">
+          <h2 class="text-lg font-semibold tracking-tight text-indigo-900 mb-6 flex items-center gap-2">
+            <span>✨</span> Generar con Inteligencia Artificial
+          </h2>
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div class="sm:col-span-2">
+                <label class="block text-sm font-medium text-indigo-900 mb-2">Tema o Instrucción:</label>
+                <input type="text" [(ngModel)]="aiTopic" placeholder="Ej. La Revolución Mexicana, Ecuaciones de 1er grado..."
+                  class="w-full px-4 py-3 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm placeholder-indigo-300">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-indigo-900 mb-2">Cantidad:</label>
+                <input type="number" [(ngModel)]="aiQuantity" min="1" max="10"
+                  class="w-full px-4 py-3 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm">
+              </div>
+            </div>
+            @if (aiError) {
+              <div class="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+                {{aiError}}
+              </div>
+            }
+            <div class="pt-2 flex justify-end">
+              <button (click)="generateAIQuestions()" [disabled]="isGenerating || !aiTopic"
+                class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transition-all shadow-sm flex items-center justify-center gap-2">
+                @if (isGenerating) {
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generando...
+                } @else {
+                  <span>Generar Preguntas ✨</span>
+                }
+              </button>
+            </div>
+          </div>
+        </section>
+
         <!-- Add Question Card -->
         <section class="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200 transition-all">
           <h2 class="text-lg font-semibold tracking-tight text-gray-900 mb-6">Añadir Nueva Pregunta</h2>

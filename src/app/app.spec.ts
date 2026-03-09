@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppComponent } from './app';
 import { DataService } from './data.service';
 import { signal } from '@angular/core';
@@ -21,7 +22,7 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      imports: [AppComponent, HttpClientTestingModule],
       providers: [
         { provide: DataService, useClass: MockDataService }
       ]
@@ -47,10 +48,10 @@ describe('AppComponent', () => {
     it('should disable save button if multiple choice has less than 2 options', () => {
       component.newQText = 'Valid text';
       component.newQType = 'multiple';
-      component.newQOptions = 'Option 1'; // Only one option
+      component.newQOptions = 'Option 1'; 
       expect(component.isSaveDisabled).toBe(true);
       
-      component.newQOptions = 'Option 1, Option 2'; // Two options
+      component.newQOptions = 'Option 1, Option 2'; 
       expect(component.isSaveDisabled).toBe(false);
     });
   });
@@ -64,13 +65,13 @@ describe('AppComponent', () => {
       expect(dataService.questions().length).toBe(1);
       expect(dataService.questions()[0].text).toBe('What is 2+2?');
       expect(dataService.questions()[0].type).toBe('open');
-      expect(component.newQText).toBe(''); // Form reset
+      expect(component.newQText).toBe(''); 
     });
 
     it('should add multiple choice question and parse options properly', () => {
       component.newQText = 'Colors?';
       component.newQType = 'multiple';
-      component.newQOptions = 'Red, Blue , Green,'; // Trailing comma and spaces
+      component.newQOptions = 'Red, Blue , Green,'; 
       component.addQuestion();
 
       expect(dataService.questions()[0].options).toEqual(['Red', 'Blue', 'Green']);
@@ -96,11 +97,9 @@ describe('AppComponent', () => {
         { id: '2', text: 'Q2', type: 'open' }
       ]);
       
-      // Select All
       component.selectAll();
       expect(component.selectedQuestions.length).toBe(2);
       
-      // Deselect All
       component.selectAll();
       expect(component.selectedQuestions.length).toBe(0);
     });
