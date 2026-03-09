@@ -1,0 +1,73 @@
+<div class="no-print header">
+  <h1>School Exam Builder 📝</h1>
+  <nav>
+    <button (click)="activeTab = 'bank'" [class.active]="activeTab === 'bank'">Banco de Preguntas</button>
+    <button (click)="activeTab = 'exam'" [class.active]="activeTab === 'exam'">Armar Examen</button>
+  </nav>
+</div>
+
+<div class="no-print container" *ngIf="activeTab === 'bank'">
+  <h2>Nueva Pregunta</h2>
+  <div class="card">
+    <label>Texto de la pregunta:</label>
+    <input [(ngModel)]="newQText" placeholder="Ej. ¿Cuánto es 2+2?">
+    <label>Tipo:</label>
+    <select [(ngModel)]="newQType">
+      <option value="open">Abierta</option>
+      <option value="multiple">Opción Múltiple</option>
+    </select>
+    <div *ngIf="newQType === 'multiple'" style="margin-top: 10px;">
+      <label>Opciones (separadas por coma):</label>
+      <input [(ngModel)]="newQOptions" placeholder="A, B, C, D" style="width: 100%;">
+    </div>
+    <button (click)="addQuestion()" style="margin-top: 15px;">Guardar Pregunta</button>
+  </div>
+
+  <h2>Tus Preguntas</h2>
+  <ul>
+    <li *ngFor="let q of data.questions()">
+      <span><strong>{{q.text}}</strong> ({{q.type}})</span>
+      <button class="btn-danger" (click)="data.deleteQuestion(q.id)">🗑️</button>
+    </li>
+  </ul>
+</div>
+
+<div class="no-print container" *ngIf="activeTab === 'exam'">
+  <h2>Configurar Examen</h2>
+  <div class="card">
+    <label>Título:</label>
+    <input [(ngModel)]="examTitle">
+    <label>Instrucciones:</label>
+    <textarea [(ngModel)]="examInstructions"></textarea>
+  </div>
+  <h2>Seleccionar Preguntas</h2>
+  <ul class="selectable-list">
+    <li *ngFor="let q of data.questions()">
+      <label style="cursor: pointer; width: 100%; display: block;">
+        <input type="checkbox" (change)="toggleExamQuestion(q)"> {{q.text}}
+      </label>
+    </li>
+  </ul>
+  <button class="btn-print" (click)="printExam()" [disabled]="selectedQuestions.length === 0">🖨️ Exportar a PDF / Imprimir</button>
+</div>
+
+<!-- ZONA DE IMPRESIÓN -->
+<div class="print-only exam-paper">
+  <div class="exam-header">
+    <h1>{{examTitle}}</h1>
+    <p><strong>Nombre del alumno:</strong> _________________________________________ <strong>Fecha:</strong> _______</p>
+    <p><strong>Instrucciones:</strong> {{examInstructions}}</p>
+    <hr>
+  </div>
+  <div class="exam-body">
+    <div class="q-item" *ngFor="let q of selectedQuestions; let i = index">
+      <p><strong>{{i + 1}}. {{q.text}}</strong></p>
+      <div *ngIf="q.type === 'multiple'" class="options">
+         <div *ngFor="let opt of q.options">(&nbsp;&nbsp;) {{opt}}</div>
+      </div>
+      <div *ngIf="q.type === 'open'" class="open-lines">
+         <br><br><br>
+      </div>
+    </div>
+  </div>
+</div>

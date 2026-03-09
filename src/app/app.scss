@@ -1,0 +1,17 @@
+.header { background: #1e293b; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+nav button { margin-left: 10px; padding: 10px 15px; cursor: pointer; background: transparent; color: white; border: 1px solid white; border-radius: 4px; }
+nav button:hover { background: #334155; }
+.active { background: #3b82f6 !important; border-color: #3b82f6; }
+.container { padding: 2rem; max-width: 900px; margin: 0 auto; }
+.card { border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-family: inherit; width: 100%; box-sizing: border-box; }
+button { padding: 10px 20px; cursor: pointer; background: #3b82f6; color: white; border: none; border-radius: 4px; font-weight: bold; }
+button:hover { background: #2563eb; }
+.btn-danger { background: #ef4444; padding: 5px 10px; }
+.btn-danger:hover { background: #dc2626; }
+.btn-print { background: #10b981; font-size: 1.1rem; width: 100%; margin-top: 20px; padding: 15px; }
+.btn-print:hover { background: #059669; }
+.btn-print:disabled { background: #9ca3af; cursor: not-allowed; }
+ul { list-style: none; padding: 0; }
+li { padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+.print-only { display: none; }
