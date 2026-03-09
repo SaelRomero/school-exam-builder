@@ -109,7 +109,7 @@ describe('AppComponent', () => {
       req.flush({ response: 'Lo siento, no puedo procesar esto' });
 
       expect(component.isGenerating).toBe(false);
-      expect(component.aiError).toContain('error interpretando');
+      expect(component.aiError).toContain('Error interpretando');
     });
   });
 });

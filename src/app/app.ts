@@ -118,17 +118,16 @@ Formato:
           }
           
           let jsonStr = rawResponse;
-          const match = jsonStr.match(/\[\s*\{[\s\S]*\}\s*\]/);
-          if (match) {
-            jsonStr = match[0];
+          // Safari Regex Fix: Eliminamos regex codicioso y usamos substrings directos para evitar cuelgues.
+          const startIdx = jsonStr.indexOf('[');
+          const endIdx = jsonStr.lastIndexOf(']');
+          
+          if (startIdx !== -1 && endIdx !== -1 && endIdx >= startIdx) {
+            jsonStr = jsonStr.substring(startIdx, endIdx + 1);
           } else {
-            // Fallback por si acaso es un arreglo vacío o formato raro
-            const startIdx = jsonStr.indexOf('[');
-            const endIdx = jsonStr.lastIndexOf(']');
-            if (startIdx !== -1 && endIdx !== -1 && endIdx >= startIdx) {
-              jsonStr = jsonStr.substring(startIdx, endIdx + 1);
-            }
+            throw new Error("No se encontraron corchetes de arreglo en la respuesta de la IA.");
           }
+          
           const generatedQuestions = JSON.parse(jsonStr);
           
           if (Array.isArray(generatedQuestions)) {
@@ -153,15 +152,15 @@ Formato:
           } else {
             throw new Error("Formato inválido: se esperaba un arreglo");
           }
-        } catch (e) {
+        } catch (e: any) {
           console.error("Error parseando respuesta de IA:", e);
-          this.aiError = 'Ocurrió un error interpretando la respuesta de la IA. Inténtalo de nuevo.';
+          this.aiError = 'Error interpretando respuesta: ' + (e.message || e.toString());
         }
         this.isGenerating = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error("Error de red con Ollama:", err);
-        this.aiError = 'Falló la conexión con el servidor de IA local. Verifica que Ollama esté corriendo.';
+        this.aiError = 'Falló la conexión o la petición tardó demasiado (Timeout). Error: ' + (err.message || 'Desconocido');
         this.isGenerating = false;
       }
     });
