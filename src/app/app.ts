@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from './data.service';
 import { Question } from './models';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-root',
@@ -46,8 +47,6 @@ export class AppComponent {
     };
     
     this.data.addQuestion(q);
-    
-    // Reset form
     this.newQText = '';
     this.newQOptions = '';
   }
@@ -67,14 +66,42 @@ export class AppComponent {
   selectAll() {
     const allQuestions = this.data.questions();
     if (this.selectedQuestions.length === allQuestions.length) {
-      this.selectedQuestions = []; // Deselect all
+      this.selectedQuestions = []; 
     } else {
-      this.selectedQuestions = [...allQuestions]; // Select all
+      this.selectedQuestions = [...allQuestions]; 
     }
   }
 
   printExam() {
     if (this.selectedQuestions.length === 0) return;
-    window.print();
+    
+    // Obtener el elemento a imprimir
+    const element = document.getElementById('exam-content');
+    if (!element) {
+      // Fallback a la impresion clasica si falla
+      window.print();
+      return;
+    }
+
+    // Configuracion de html2pdf
+    const opt = {
+      margin:       15,
+      filename:     `${this.examTitle.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
+      image:        { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' as const }
+    };
+
+    // Para que el CSS funcione bien al renderizar, mostramos el div temporalmente
+    element.style.display = 'block';
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+      // Ocultarlo de nuevo despues de generar el PDF
+      element.style.display = 'none';
+    }).catch((err: any) => {
+      console.error('Error al generar PDF:', err);
+      element.style.display = 'none';
+      window.print(); // Fallback
+    });
   }
 }
