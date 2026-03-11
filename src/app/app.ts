@@ -93,10 +93,9 @@ export class AppComponent {
 
   
   toggleQuestionType(q: Question) {
-    const newType = q.type === 'open' ? 'multiple' : 'open';
+    const newType: "open" | "multiple" = q.type === 'open' ? 'multiple' : 'open';
     let newOptions = q.options;
     
-    // Si la convertimos a multiple y no tiene opciones, le generamos unas falsas temporales
     if (newType === 'multiple' && (!q.options || q.options.length === 0)) {
       newOptions = [q.answer || 'Opción A', 'Opción B', 'Opción C'];
     }
@@ -109,7 +108,7 @@ export class AppComponent {
   }
 
   async regenerateQuestion(q: Question) {
-    this.isGenerating.set(true);
+    this.isGenerating = true;
     this.showToast('Regenerando pregunta con IA...');
     
     const prompt = `Improve, rewrite or generate a better version of this exam question. The output must be valid JSON in this exact format. 
@@ -143,7 +142,7 @@ Original Question: "${q.text}"`;
       console.error(e);
       this.showToast('Error al regenerar pregunta. Intenta de nuevo.');
     } finally {
-      this.isGenerating.set(false);
+      this.isGenerating = false;
     }
   }
 
