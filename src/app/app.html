@@ -1,91 +1,123 @@
-<div class="no-print min-h-screen flex flex-col bg-[#FAFAFA] text-[#111]">
-  <!-- Navigation Header -->
+
+<div class="min-h-screen bg-[#fafafa] flex flex-col font-sans overflow-x-hidden text-gray-900">
+  
+  <!-- Header Simple (Solo Branding) -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-    <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <div class="flex items-center gap-3">
-        <div class="bg-black text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-lg">📝</div>
-        <h1 class="text-xl font-bold tracking-tight">Exam Builder</h1>
-      </div>
-      
-      <div class="flex gap-3 w-full sm:w-auto">
-        <button (click)="exportExam(true)" [disabled]="examQuestions().length === 0"
-          class="w-full sm:w-auto bg-indigo-600 text-white px-5 py-2 rounded-md text-[16px] sm:text-sm font-medium hover:bg-indigo-700 disabled:bg-indigo-300 disabled:text-indigo-100 transition-all shadow-sm flex items-center justify-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Exportar Clave
-        </button>
-        <button (click)="exportWord()" [disabled]="examQuestions().length === 0" class="w-full sm:w-auto bg-blue-600 text-white px-5 py-2 rounded-md text-[16px] sm:text-sm font-medium hover:bg-blue-700 disabled:bg-blue-300 disabled:text-blue-100 transition-all shadow-sm flex items-center justify-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          Exportar Word
-        </button>
-        <button (click)="exportExam(false)" [disabled]="examQuestions().length === 0"
-          class="w-full sm:w-auto bg-black text-white px-5 py-2 rounded-md text-[16px] sm:text-sm font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition-all shadow-sm flex items-center justify-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Exportar PDF
-        </button>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center">
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <h1 class="text-lg font-bold tracking-tight">Exam Builder</h1>
       </div>
     </div>
   </header>
 
   <!-- Main Content Area -->
-  <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8">
+  <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
     
-    <!-- Exam Header Config -->
-    <div class="mb-8 bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200 space-y-5">
-      <div>
-        <label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wider">Título del Examen</label>
-        <input type="text" [(ngModel)]="examTitle" placeholder="Ej. Examen Parcial de Matemáticas..."
-          class="w-full text-2xl sm:text-3xl font-bold text-gray-900 placeholder-gray-300 border-b border-transparent focus:border-gray-300 focus:ring-0 px-0 bg-transparent outline-none transition-colors pb-1">
+    <!-- 1. Configuración del Examen -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 sm:p-6 mb-6">
+      <h2 class="text-lg font-bold mb-4">Configuración del Examen</h2>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Título del examen</label>
+        <input type="text" [(ngModel)]="examTitle" placeholder="Ej. Examen Parcial de Matemáticas"
+          class="w-full h-11 border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow">
       </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre del Profesor</label>
+          <input type="text" [(ngModel)]="teacherName" placeholder="Ej. Fátima Malváez"
+            class="w-full h-11 border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Periodo / Parcial</label>
+          <input type="text" [(ngModel)]="examPeriod" placeholder="Ej. 1st partial exam"
+            class="w-full h-11 border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Grado / Semestre</label>
+          <input type="text" [(ngModel)]="examGradeOrSemester" placeholder="Ej. 1st semester"
+            class="w-full h-11 border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow">
+        </div>
+      </div>
+      
       <div>
-        <label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wider">Instrucciones</label>
-        <textarea [(ngModel)]="examInstructions" rows="2" placeholder="Ej. Lee con atención cada una de las preguntas..."
-          class="w-full text-base text-gray-600 placeholder-gray-300 border border-gray-200 rounded-lg p-3 bg-gray-50 focus:bg-white focus:border-gray-400 focus:ring-2 focus:ring-gray-100 outline-none transition-all resize-none"></textarea>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Instrucciones</label>
+        <textarea [(ngModel)]="examInstructions" rows="2"
+          class="w-full min-h-[100px] border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow resize-y"></textarea>
       </div>
     </div>
 
-    <!-- Feedback Toast -->
-    @if (toastMessage) {
-      <div class="mb-6 p-4 bg-green-50 text-green-800 border border-green-200 rounded-lg flex items-center gap-3 animate-fade-in shadow-sm">
-        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <span class="font-medium text-[16px] sm:text-sm">{{toastMessage}}</span>
-      </div>
-    }
-
-    <!-- Current Questions in Exam -->
-    <div class="space-y-4 mb-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold tracking-tight text-gray-900">Preguntas del Examen</h2>
-        <span class="text-xs font-medium bg-gray-100 text-gray-600 py-1 px-2.5 rounded-md">{{examQuestions().length}} preguntas</span>
-      </div>
-
-      @if (examQuestions().length === 0) {
-        <div class="text-center py-16 bg-gray-50/50 rounded-xl border-2 border-dashed border-gray-200">
-          <div class="text-gray-300 mb-4">
-            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+    <!-- 2. Formato y Exportación -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 sm:p-6 mb-6">
+      <h2 class="text-lg font-bold mb-4">Formato y Exportación</h2>
+      
+      <div class="mb-5">
+        <label for="format-select" class="block text-sm font-semibold text-gray-700 mb-2">Formato del documento</label>
+        <div class="relative">
+          <select id="format-select" [(ngModel)]="selectedFormat" 
+            class="w-full h-11 border border-gray-300 rounded-md px-3 bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black transition-shadow appearance-none cursor-pointer">
+            <option value="standard">Formato estándar (sin escuela)</option>
+            <option value="cristobal_colon">Formato escuela Cristóbal Colón</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
           </div>
-          <p class="text-gray-500 font-medium">El examen está vacío.</p>
-          <p class="text-[16px] sm:text-sm text-gray-400 mt-1">Añade preguntas manualmente o diséñalas con Inteligencia Artificial.</p>
+        </div>
+      </div>
+      
+      <!-- Botones de Acción (Vertical en móvil, Horizontal en desktop) -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <!-- Botón Principal: PDF -->
+        <button (click)="exportExam(false)" [disabled]="examQuestions().length === 0"
+          class="w-full sm:flex-1 h-11 bg-black text-white rounded-md font-bold text-[15px] hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition-colors shadow-sm flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+          Exportar PDF
+        </button>
+
+        <!-- Botones Secundarios: Word y Clave -->
+        <button (click)="exportWord()" [disabled]="examQuestions().length === 0" 
+          class="w-full sm:flex-1 h-11 bg-white border border-gray-300 text-gray-700 rounded-md font-semibold text-[15px] hover:bg-gray-50 disabled:bg-gray-50 disabled:text-gray-400 transition-colors flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Exportar Word
+        </button>
+        
+        <button (click)="exportExam(true)" [disabled]="examQuestions().length === 0"
+          class="w-full sm:flex-1 h-11 bg-white border border-gray-300 text-gray-700 rounded-md font-semibold text-[15px] hover:bg-gray-50 disabled:bg-gray-50 disabled:text-gray-400 transition-colors flex items-center justify-center gap-2">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          Exportar Clave
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. Preguntas del examen -->
+    <div class="mb-6">
+      <h2 class="text-lg font-bold mb-4 text-gray-800">Preguntas del examen ({{examQuestions().length}})</h2>
+      
+      @if (examQuestions().length === 0) {
+        <div class="bg-white border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-center p-6 min-h-[120px]">
+          <svg class="w-10 h-10 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <h3 class="text-sm font-bold text-gray-900">El examen está vacío</h3>
+          <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">Añade preguntas manualmente o diséñalas con Inteligencia Artificial.</p>
         </div>
       } @else {
-        <div class="space-y-3">
+        <div class="space-y-4">
           @for (q of examQuestions(); track q.id; let i = $index) {
-            <div class="p-5 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm bg-white transition-all group flex flex-col sm:flex-row justify-between gap-4">
-              <div class="flex-grow">
-                <div class="flex items-center gap-3 mb-2">
-                  <span class="text-xs font-bold text-gray-400">#{{i + 1}}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-500 uppercase tracking-widest">
-                    {{q.type === 'open' ? 'Abierta' : 'Múltiple'}}
-                  </span>
-                </div>
+            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative group transition-shadow hover:shadow-md">
+              <button (click)="removeQuestion(q.id)" 
+                class="absolute top-3 right-3 text-gray-400 hover:text-red-600 transition-colors focus:outline-none bg-white rounded-full p-1"
+                title="Eliminar pregunta">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+              
+              <div class="pr-8">
                 <p 
                   contenteditable="true" 
                   (blur)="updateQuestionText(q.id, $event)"
                   class="text-[16px] sm:text-sm text-gray-900 font-medium leading-relaxed hover:bg-yellow-50 focus:bg-yellow-100 focus:outline-none p-1 rounded transition-colors"
                   title="Haz clic para editar">{{q.text}}</p>
+                
                 @if (q.type === 'multiple' && q.options) {
                   <div class="mt-3 flex flex-wrap gap-2">
                     @for (opt of q.options; track $index; let optIdx = $index) {
@@ -96,26 +128,13 @@
                     }
                   </div>
                 }
+
                 @if (q.answer) {
-                  <div class="mt-3 p-2 bg-green-50/50 border border-green-100 rounded text-[13px] text-green-800 font-medium">
-                    <span class="opacity-75 font-semibold text-green-700 mr-1">R:</span> 
-                    <span contenteditable="true" 
-                          (blur)="updateQuestionAnswer(q.id, $event)"
-                          class="hover:bg-green-100 focus:bg-green-200 focus:outline-none px-1 rounded transition-colors"
-                          title="Haz clic para editar la respuesta">{{q.answer}}</span>
+                  <div class="mt-3 flex items-start gap-2 text-sm bg-green-50 text-green-800 px-3 py-2 rounded-md border border-green-100">
+                    <svg class="w-4 h-4 mt-0.5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span class="font-medium">Respuesta: <span class="font-normal">{{q.answer}}</span></span>
                   </div>
                 }
-              </div>
-              <div class="flex flex-row sm:flex-col gap-2 sm:self-start">
-                <button (click)="regenerateQuestion(q)" [disabled]="isGenerating" class="text-gray-400 hover:text-indigo-600 p-1.5 rounded-md hover:bg-indigo-50 transition-colors disabled:opacity-50" title="Regenerar con IA">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                </button>
-                <button (click)="toggleQuestionType(q)" class="text-gray-400 hover:text-blue-600 p-1.5 rounded-md hover:bg-blue-50 transition-colors" title="Cambiar tipo (Abierta/Múltiple)">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                </button>
-                <button (click)="removeQuestion(q.id)" class="text-gray-400 hover:text-red-500 p-1.5 rounded-md hover:bg-red-50 transition-colors" title="Eliminar">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                </button>
               </div>
             </div>
           }
@@ -123,159 +142,151 @@
       }
     </div>
 
-    <!-- Actions / Add Questions Tools -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- 4. Generar con IA -->
+    <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-sm border border-purple-100 p-5 sm:p-6 mb-6">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-xl">✨</span>
+        <h2 class="text-lg font-bold text-gray-900">Generar con IA</h2>
+      </div>
       
-      <!-- AI Generation Tool -->
-      <section class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 sm:p-7 rounded-xl shadow-sm border border-indigo-100 transition-all">
-        <h3 class="text-base font-semibold text-indigo-900 mb-5 flex items-center gap-2">
-          <span>✨</span> Generar con IA
-        </h3>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-indigo-900/70 uppercase tracking-wider mb-1.5">Tema o Instrucción:</label>
-            <input type="text" [(ngModel)]="aiTopic" placeholder="Ej. Revolución Mexicana, Fracciones..."
-              class="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-base sm:text-[16px] sm:text-sm placeholder-indigo-300">
-          </div>
-          <div class="flex gap-4">
-            <div class="w-1/3">
-              <label class="block text-xs font-semibold text-indigo-900/70 uppercase tracking-wider mb-1.5">Cant.</label>
-              <input type="number" [(ngModel)]="aiQuantity" min="1" max="10"
-                class="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-base sm:text-[16px] sm:text-sm">
-            </div>
-            <div class="w-2/3 flex items-end">
-              <button (click)="generateAIQuestions()" [disabled]="isGenerating || !aiTopic"
-                class="w-full bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-[16px] sm:text-sm font-medium hover:bg-indigo-700 disabled:bg-indigo-300 transition-all shadow-sm flex items-center justify-center gap-2">
-                @if (isGenerating) {
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                  Creando...
-                } @else {
-                  <span>Generar ✨</span>
-                }
-              </button>
-            </div>
-          </div>
-          @if (isGenerating) {
-            <div class="p-3 bg-indigo-50 text-indigo-700 text-xs rounded-lg border border-indigo-200 mt-2 flex items-center gap-2 animate-pulse">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              <span>La IA está pensando. Esto suele tardar entre 10 y 20 segundos...</span>
-            </div>
-          }
-          @if (aiError) {
-            <div class="p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200 mt-2">
-              {{aiError}}
-            </div>
-          }
+      <!-- Layout vertical en móvil, horizontal en desktop -->
+      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+        <div class="w-full sm:flex-grow">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Tema o instrucción</label>
+          <input type="text" [(ngModel)]="aiTopic" placeholder="Ej. Ecuaciones de primer grado, opción múltiple..."
+            class="w-full h-11 border border-purple-200 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow">
         </div>
-      </section>
-
-      <!-- Manual Question Tool -->
-      <section class="bg-white p-6 sm:p-7 rounded-xl shadow-sm border border-gray-200 transition-all">
-        <h3 class="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
-          Añadir Manualmente
-        </h3>
-        <div class="space-y-4">
-          <div>
-            <textarea [(ngModel)]="newQText" rows="2" placeholder="Escribe tu pregunta aquí..."
-              class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black outline-none transition-all resize-none text-base sm:text-[16px] sm:text-sm placeholder-gray-400"></textarea>
-          </div>
-          <div class="flex gap-4">
-            <div class="w-1/2">
-              <select [(ngModel)]="newQType" class="appearance-none w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black outline-none transition-all text-base sm:text-[16px] sm:text-[16px] sm:text-sm cursor-pointer">
-                <option value="open">Abierta</option>
-                <option value="multiple">Opción Múltiple</option>
-              </select>
+        
+                <div class="w-full sm:w-32 flex-shrink-0">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Idioma</label>
+          <div class="relative">
+            <select [(ngModel)]="aiLanguage" class="w-full h-11 border border-purple-200 rounded-md px-3 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer text-gray-800">
+              <option value="Spanish">Español</option>
+              <option value="English">Inglés</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </div>
-            <div class="w-1/2">
-              <button (click)="addManualQuestion()" [disabled]="isSaveDisabled"
-                class="w-full bg-white border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-[16px] sm:text-sm font-medium hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 transition-all shadow-sm">
-                Añadir
-              </button>
-            </div>
-          </div>
-          @if (newQType === 'multiple') {
-            <div class="animate-fade-in pt-2">
-              <input type="text" [(ngModel)]="newQOptions" placeholder="Opciones (separadas por coma)"
-                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black outline-none transition-all text-base sm:text-[16px] sm:text-sm placeholder-gray-400">
-            </div>
-          }
-          <div class="animate-fade-in pt-2">
-            <input type="text" [(ngModel)]="newQAnswer" placeholder="Respuesta correcta (opcional)"
-              class="w-full px-4 py-2.5 bg-green-50 border border-green-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-green-500 outline-none transition-all text-base sm:text-[16px] sm:text-sm placeholder-green-600/50">
           </div>
         </div>
-      </section>
 
+        <div class="w-full sm:w-32 flex-shrink-0">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Nivel</label>
+          <div class="relative">
+            <select [(ngModel)]="aiDifficulty" class="w-full h-11 border border-purple-200 rounded-md px-3 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer text-gray-800">
+              <option value="easy">Fácil</option>
+              <option value="medium">Medio</option>
+              <option value="hard">Difícil</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full sm:w-28 flex-shrink-0">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Cantidad</label>
+          <div class="relative">
+            <select [(ngModel)]="aiQuantity" class="w-full h-11 border border-purple-200 rounded-md px-3 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer text-gray-800">
+              <option [value]="1">1</option>
+              <option [value]="3">3</option>
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="20">20</option>
+              <option [value]="30">30</option>
+              <option [value]="40">40</option>
+              <option [value]="50">50</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
+        </div>
+        
+        <button (click)="generateAIQuestions()" [disabled]="isGenerating || !aiTopic"
+          class="w-full sm:w-auto h-11 px-6 bg-purple-600 text-white font-bold rounded-md hover:bg-purple-700 disabled:bg-purple-300 transition-colors flex justify-center items-center gap-2 shadow-sm flex-shrink-0">
+          @if(isGenerating) {
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span>Generando...</span>
+          } @else {
+            <span>Generar ✨</span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. Añadir Manualmente -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 sm:p-6 mb-6">
+      <h2 class="text-lg font-bold mb-4">Añadir Manualmente</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Tipo de Pregunta</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <label class="flex-1 border border-gray-200 rounded-md p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors h-11">
+              <input type="radio" name="qType" value="open" [(ngModel)]="newQType" class="text-black focus:ring-black">
+              <span class="text-sm font-medium text-gray-800">Abierta</span>
+            </label>
+            <label class="flex-1 border border-gray-200 rounded-md p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors h-11">
+              <input type="radio" name="qType" value="multiple" [(ngModel)]="newQType" class="text-black focus:ring-black">
+              <span class="text-sm font-medium text-gray-800">Opción Múltiple</span>
+            </label>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Pregunta</label>
+          <textarea [(ngModel)]="newQText" placeholder="Escribe la pregunta aquí..."
+            class="w-full min-h-[100px] border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow resize-y"></textarea>
+        </div>
+        
+        @if (newQType === 'multiple') {
+          <div class="animate-fade-in">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Opciones (separadas por coma)</label>
+            <input type="text" [(ngModel)]="newQOptions" placeholder="Ej. Sí, No, Tal vez"
+              class="w-full h-11 border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow">
+          </div>
+        }
+        
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Respuesta Correcta <span class="text-gray-400 font-normal">(Opcional)</span></label>
+          <input type="text" [(ngModel)]="newQAnswer" placeholder="Para uso interno o en clave"
+            class="w-full h-11 border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow">
+        </div>
+        
+        <button (click)="addManualQuestion()" [disabled]="!newQText"
+          class="w-full h-11 mt-2 bg-gray-900 text-white font-bold rounded-md hover:bg-black disabled:bg-gray-300 transition-colors flex justify-center items-center gap-2 shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Añadir Pregunta
+        </button>
+      </div>
     </div>
   </main>
-
-  <footer class="mt-auto py-8 text-center text-xs text-gray-400">
-    <p>School Exam Builder &copy; 2026 | Diseño UI/UX Optimizado</p>
-  </footer>
-</div>
-
-<!-- Printable Exam View (Hidden in normal mode) -->
-<div id="exam-content" class="print-only" style="display: none; width: 100%; max-width: 800px; box-sizing: border-box; padding: 15px 20px; background: white; color: black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-  <div style="margin-bottom: 20px;">
-    <h1 style="text-align: center; font-size: 22px; font-weight: bold; margin: 0 0 20px 0; text-transform: uppercase;">{{examTitle || 'Examen de Evaluación'}}</h1>
-    
-    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px;">
-      <div style="display: flex; gap: 10px; flex-grow: 1;">
-        <span style="font-weight: bold; white-space: nowrap;">Nombre del alumno:</span>
-        <div style="border-bottom: 1px solid #000; flex-grow: 1; margin-right: 30px;"></div>
-      </div>
-      <div style="display: flex; gap: 10px; width: 180px; flex-shrink: 0;">
-        <span style="font-weight: bold;">Fecha:</span>
-        <div style="border-bottom: 1px solid #000; flex-grow: 1;"></div>
-      </div>
-    </div>
-
-    @if (examInstructions) {
-      <div style="background-color: #ffffff; border: 2px solid #000000; border-radius: 6px; padding: 12px 15px; font-size: 13px; color: #000000; line-height: 1.5; word-wrap: break-word; word-break: break-word; white-space: pre-wrap; margin-bottom: 5px;">
-        <span style="font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 4px;">Instrucciones Generales:</span>
-        {{examInstructions}}
-      </div>
-    }
+  
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-3 rounded shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-sm font-medium flex items-center gap-2">
+    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toast-msg">Mensaje</span>
   </div>
 
-  <div>
-    @for (q of examQuestions(); track q.id; let i = $index) {
-      <div style="margin-bottom: 25px; break-inside: avoid; page-break-inside: avoid; width: 100%; box-sizing: border-box;">
-        <p style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0; line-height: 1.4; text-align: left; word-wrap: break-word; word-break: break-word; white-space: pre-wrap;">
-          {{i + 1}}. {{q.text}}
-        </p>
-        
-        @if (q.type === 'open') {
-          <div style="margin-top: 15px; width: 100%;">
-            <div style="border-bottom: 1px solid #4b5563; height: 30px; margin-bottom: 5px; width: 100%;"></div>
-            <div style="border-bottom: 1px solid #4b5563; height: 30px; margin-bottom: 5px; width: 100%;"></div>
-            <div style="border-bottom: 1px solid #4b5563; height: 30px; width: 100%;"></div>
-          </div>
-        }
-        @if (showAnswersInPdf && q.answer) {
-          <div style="margin-top: 10px; color: #166534; font-size: 14px; font-weight: bold; background-color: #f0fdf4; padding: 5px 10px; border: 1px solid #bbf7d0; border-radius: 4px;">
-            Respuesta: {{q.answer}}
-          </div>
-        }
-        
-        @if (q.type === 'multiple' && q.options) {
-          <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; padding-left: 10px;">
-            @for (opt of q.options; track opt; let j = $index) {
-              <div style="display: flex; align-items: flex-start; gap: 12px; word-wrap: break-word;">
-                <div style="width: 16px; height: 16px; border: 2px solid #000; border-radius: 50%; flex-shrink: 0; margin-top: 2px;"></div>
-                <span style="font-size: 14px; font-weight: bold; width: 22px; flex-shrink: 0;">{{ ['A)', 'B)', 'C)', 'D)', 'E)', 'F)'][j] || '○' }}</span>
-                <span style="font-size: 14px; line-height: 1.4; word-wrap: break-word; word-break: break-word; flex-grow: 1;">{{opt}}</span>
-              </div>
-            }
-          </div>
-        }
-
-        @if (showAnswersInPdf && q.answer && q.type === 'multiple') {
-          <div style="margin-top: 10px; color: #166534; font-size: 14px; font-weight: bold; background-color: #f0fdf4; padding: 5px 10px; border: 1px solid #bbf7d0; border-radius: 4px;">
-            Respuesta: {{q.answer}}
-          </div>
-        }
-      </div>
-    }
-  </div>
+  <div id="exam-content" class="print-only" style="display: none; width: 100%; max-width: 800px; box-sizing: border-box; background: white; color: black;">
+  @if (selectedFormat === 'standard') {
+    <app-standard-format style="display: block;"
+      [examTitle]="examTitle"
+      [examInstructions]="examInstructions"
+      [questions]="examQuestions()"
+      [showAnswersInPdf]="showAnswersInPdf">
+    </app-standard-format>
+  } @else {
+    <app-cristobal-colon-format style="display: block;"
+      [examTitle]="examTitle"
+      [examInstructions]="examInstructions"
+      [teacherName]="teacherName"
+      [examPeriod]="examPeriod"
+      [examGradeOrSemester]="examGradeOrSemester"
+      [questions]="examQuestions()"
+      [showAnswersInPdf]="showAnswersInPdf">
+    </app-cristobal-colon-format>
+  }
 </div>
+

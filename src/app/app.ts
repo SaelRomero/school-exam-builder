@@ -6,11 +6,13 @@ import { timeout } from 'rxjs/operators';
 import { Question } from './models';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, NumberFormat, LevelFormat, AlignmentType } from 'docx';
 import html2pdf from 'html2pdf.js';
+import { StandardFormatComponent } from './exam-formats/standard-format/standard-format.component';
+import { CristobalColonFormatComponent } from './exam-formats/cristobal-colon-format/cristobal-colon-format.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StandardFormatComponent, CristobalColonFormatComponent],
   templateUrl: './app.html'
 })
 export class AppComponent {
@@ -18,6 +20,9 @@ export class AppComponent {
   
   examTitle = '';
   examInstructions = 'Lee con atención cada una de las preguntas y responde claramente en el espacio indicado. No se permiten tachaduras.';
+  teacherName = '';
+  examPeriod = '';
+  examGradeOrSemester = '';
   examQuestions = signal<Question[]>([]);
   
   newQText = '';
@@ -25,9 +30,12 @@ export class AppComponent {
   newQOptions = '';
   newQAnswer = '';
   showAnswersInPdf = false;
+  selectedFormat: 'standard' | 'cristobal_colon' = 'standard';
 
   aiTopic = '';
   aiQuantity = 3;
+  aiLanguage = 'Spanish';
+  aiDifficulty = 'medium';
   isGenerating = false;
   aiError = '';
   
@@ -128,12 +136,36 @@ export class AppComponent {
     this.isGenerating = true;
     this.showToast('Regenerando pregunta con IA...');
     
-    const prompt = `You are an expert teacher. Generate a COMPLETELY NEW and DIFFERENT exam question related to the topic of the current exam: "${this.aiTopic}".
-Do not just paraphrase the old question. Make it a brand new question testing a different concept within the same topic.
-The output must be valid JSON in this exact format. 
-DO NOT USE MARKDOWN BLOCK QUOTES AROUND THE JSON. NO OTHER TEXT. JUST RAW JSON.
+    const prompt = `You are an expert exam teacher.
+Generate a COMPLETELY NEW exam question related to the topic: "${this.aiTopic}"
+Language of the exam: "${this.aiLanguage}"
+Difficulty level: "${this.aiDifficulty}"
+
+The new question must:
+- be different from the original
+- test a different concept within the topic
+- not paraphrase the original question
+
+Keep the same question type: "${q.type}"
+
+The question, options, and answer MUST be written entirely in: "${this.aiLanguage}".
+Never mix languages.
+
+If multiple choice:
+- 3 or 4 options
+- only one correct answer
+- distractors must be plausible
+- options should have similar length
+
+Return ONLY raw JSON. Do NOT include explanations, markdown, or text outside the JSON.
+
 Format:
-{ "text": "The actual new question", "type": "${q.type}", "options": ["opt1", "opt2", "opt3"], "answer": "The correct answer" }
+{
+  "text": "New question",
+  "type": "${q.type}",
+  "options": ["opt1", "opt2", "opt3", "opt4"],
+  "answer": "correct option"
+}
 
 Old Question to replace: "${q.text}"`;
 
@@ -175,26 +207,50 @@ Old Question to replace: "${q.text}"`;
     this.isGenerating = true;
     this.aiError = '';
 
-    const prompt = `Actúa como un profesor experto. Genera exactamente ${this.aiQuantity} preguntas sobre el tema "${this.aiTopic}".
+    const prompt = `Actúa como un profesor experto que crea exámenes escolares.
+Tema del examen: "${this.aiTopic}"
+Idioma del examen: "${this.aiLanguage}"
+Nivel de dificultad: "${this.aiDifficulty}"
 
-REGLA ESTRICTA E INQUEBRANTABLE:
-Tu respuesta DEBE empezar con '[' y terminar con ']'.
-Cero saludos. Cero despedidas. Cero explicaciones. Cero Markdown.
-SOLO JSON CRUDO.
+Genera exactamente ${this.aiQuantity} preguntas.
 
-Formato:
+Reglas pedagógicas:
+- Evaluar comprensión real del tema y cubrir diferentes aspectos.
+- Evitar ambigüedad y trivialidades.
+- No repetir la misma estructura de pregunta.
+- Evitar generar preguntas duplicadas. Cada pregunta debe evaluar un concepto distinto.
+
+Reglas de idioma:
+Todas las preguntas, opciones y respuestas deben estar completamente en el idioma especificado: "${this.aiLanguage}".
+Nunca mezclar idiomas dentro del mismo examen.
+
+Reglas para preguntas de opción múltiple (type: multiple):
+- Entre 3 y 4 opciones con longitud similar.
+- Solo una opción correcta.
+- Las otras deben ser distractores plausibles. Evitar distractores absurdos o demasiado obvios.
+
+Reglas para preguntas abiertas (type: open):
+- La respuesta esperada debe ser corta.
+- No generar párrafos. Debe ser fácil de evaluar.
+
+Regla estricta de formato de salida:
+La respuesta DEBE comenzar con '[' y terminar con ']'.
+Cero saludos, explicaciones, markdown o bloques de código. SOLO JSON CRUDO VÁLIDO.
+Asegúrate de que no hay comas sobrantes y las listas están correctamente cerradas.
+
+Formato obligatorio de salida:
 [
   {
     "text": "¿Pregunta abierta?",
     "type": "open",
     "options": [],
-    "answer": "Respuesta correcta aquí"
+    "answer": "respuesta correcta corta"
   },
   {
-    "text": "¿Pregunta múltiple?",
+    "text": "¿Pregunta de opción múltiple?",
     "type": "multiple",
-    "options": ["Opcion 1", "Opcion 2"],
-    "answer": "Opcion 1"
+    "options": ["opcion 1", "opcion 2", "opcion 3", "opcion 4"],
+    "answer": "opcion correcta"
   }
 ]`;
 
@@ -344,11 +400,12 @@ Formato:
 
     const title = this.examTitle ? this.examTitle.trim().replace(/\s+/g, '_') : 'Examen';
     const opt = {
-      margin:       15,
+      margin: [10, 15, 10, 15] as [number, number, number, number],
       filename:     `${title}_${new Date().toISOString().split('T')[0]}.pdf`,
       image:        { type: 'jpeg' as const, quality: 0.98 },
       html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' as const }
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' as const },
+      pagebreak: { mode: ['css', 'legacy'], avoid: '.question-block' }
     };
 
     element.style.display = 'block';
