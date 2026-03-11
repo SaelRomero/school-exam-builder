@@ -266,6 +266,71 @@ Formato:
     });
   }
 
+  
+  async exportWord() {
+    this.showToast('Generando archivo Word...');
+    
+    const children: any[] = [];
+    
+    children.push(new Paragraph({
+      text: this.examTitle || 'Examen Sin Título',
+      heading: HeadingLevel.HEADING_1,
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 400 }
+    }));
+
+    if (this.examInstructions) {
+      children.push(new Paragraph({
+        text: this.examInstructions,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 600 }
+      }));
+    }
+
+    this.examQuestions().forEach((q, index) => {
+      children.push(new Paragraph({
+        children: [
+          new TextRun({ text: `${index + 1}. `, bold: true }),
+          new TextRun({ text: q.text })
+        ],
+        spacing: { before: 400, after: 200 }
+      }));
+
+      if (q.type === 'multiple' && q.options) {
+        const letters = ['A)', 'B)', 'C)', 'D)', 'E)', 'F)'];
+        q.options.forEach((opt, optIdx) => {
+          children.push(new Paragraph({
+            text: `   ${letters[optIdx] || '○'} ${opt}`,
+            spacing: { before: 100, after: 100 }
+          }));
+        });
+      } else {
+        for (let i = 0; i < 3; i++) {
+          children.push(new Paragraph({
+            text: "___________________________________________________________________________",
+            spacing: { before: 200, after: 200 }
+          }));
+        }
+      }
+    });
+
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: children
+      }]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${this.examTitle || 'Examen'}.docx`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    this.showToast('Descarga completada');
+  }
+
   exportExam(withAnswers: boolean = false) {
     if (this.examQuestions().length === 0) return;
     this.showAnswersInPdf = withAnswers;
