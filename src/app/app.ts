@@ -73,19 +73,23 @@ export class AppComponent {
   }
 
   
+  
   updateQuestionText(id: string, event: Event) {
     const newText = (event.target as HTMLElement).innerText.trim();
     if (newText) {
-      this.data.updateQuestion(id, { text: newText });
+      const updated = this.examQuestions().map(q => q.id === id ? { ...q, text: newText } : q);
+      this.examQuestions.set(updated);
     }
   }
 
   updateQuestionAnswer(id: string, event: Event) {
     const newAnswer = (event.target as HTMLElement).innerText.trim();
     if (newAnswer) {
-      this.data.updateQuestion(id, { answer: newAnswer });
+      const updated = this.examQuestions().map(q => q.id === id ? { ...q, answer: newAnswer } : q);
+      this.examQuestions.set(updated);
     }
   }
+
 
   removeQuestion(id: string) {
     this.examQuestions.set(this.examQuestions().filter(q => q.id !== id));
