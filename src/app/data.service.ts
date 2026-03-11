@@ -16,6 +16,13 @@ export class DataService {
     localStorage.setItem('questions', JSON.stringify(updated));
   }
 
+  
+  updateQuestion(id: string, partialUpdate: Partial<Question>) {
+    const updated = this.questions().map(q => q.id === id ? { ...q, ...partialUpdate } : q);
+    this.questions.set(updated);
+    localStorage.setItem('questions', JSON.stringify(updated));
+  }
+
   deleteQuestion(id: string) {
     const updated = this.questions().filter(q => q.id !== id);
     this.questions.set(updated);

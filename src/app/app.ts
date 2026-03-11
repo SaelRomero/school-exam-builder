@@ -72,6 +72,21 @@ export class AppComponent {
     this.showToast('Pregunta añadida manualmente.');
   }
 
+  
+  updateQuestionText(id: string, event: Event) {
+    const newText = (event.target as HTMLElement).innerText.trim();
+    if (newText) {
+      this.data.updateQuestion(id, { text: newText });
+    }
+  }
+
+  updateQuestionAnswer(id: string, event: Event) {
+    const newAnswer = (event.target as HTMLElement).innerText.trim();
+    if (newAnswer) {
+      this.data.updateQuestion(id, { answer: newAnswer });
+    }
+  }
+
   removeQuestion(id: string) {
     this.examQuestions.set(this.examQuestions().filter(q => q.id !== id));
   }
