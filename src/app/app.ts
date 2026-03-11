@@ -82,6 +82,22 @@ export class AppComponent {
     }
   }
 
+  
+  updateQuestionOption(id: string, optionIndex: number, event: Event) {
+    const newOption = (event.target as HTMLElement).innerText.trim();
+    if (newOption) {
+      const updated = this.examQuestions().map(q => {
+        if (q.id === id && q.options) {
+          const newOptions = [...q.options];
+          newOptions[optionIndex] = newOption;
+          return { ...q, options: newOptions };
+        }
+        return q;
+      });
+      this.examQuestions.set(updated);
+    }
+  }
+
   updateQuestionAnswer(id: string, event: Event) {
     const newAnswer = (event.target as HTMLElement).innerText.trim();
     if (newAnswer) {

@@ -84,8 +84,11 @@
                   title="Haz clic para editar">{{q.text}}</p>
                 @if (q.type === 'multiple' && q.options) {
                   <div class="mt-3 flex flex-wrap gap-2">
-                    @for (opt of q.options; track opt) {
-                      <span class="text-xs bg-white border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md shadow-sm">{{opt}}</span>
+                    @for (opt of q.options; track $index; let optIdx = $index) {
+                      <span contenteditable="true" 
+                            (blur)="updateQuestionOption(q.id, optIdx, $event)"
+                            class="text-xs bg-white border border-gray-200 text-gray-600 px-2.5 py-1.5 rounded-md shadow-sm hover:bg-yellow-50 focus:bg-yellow-100 focus:outline-none transition-colors"
+                            title="Haz clic para editar la opción">{{opt}}</span>
                     }
                   </div>
                 }
