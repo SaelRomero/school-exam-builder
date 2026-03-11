@@ -111,12 +111,14 @@ export class AppComponent {
     this.isGenerating = true;
     this.showToast('Regenerando pregunta con IA...');
     
-    const prompt = `Improve, rewrite or generate a better version of this exam question. The output must be valid JSON in this exact format. 
+    const prompt = `You are an expert teacher. Generate a COMPLETELY NEW and DIFFERENT exam question related to the topic of the current exam: "${this.aiTopic}".
+Do not just paraphrase the old question. Make it a brand new question testing a different concept within the same topic.
+The output must be valid JSON in this exact format. 
 DO NOT USE MARKDOWN BLOCK QUOTES AROUND THE JSON. NO OTHER TEXT. JUST RAW JSON.
 Format:
-{ "text": "The actual question", "type": "${q.type}", "options": ["opt1", "opt2", "opt3"], "answer": "The correct answer" }
+{ "text": "The actual new question", "type": "${q.type}", "options": ["opt1", "opt2", "opt3"], "answer": "The correct answer" }
 
-Original Question: "${q.text}"`;
+Old Question to replace: "${q.text}"`;
 
     try {
       const response = await fetch('/api/ollama/api/generate', {
