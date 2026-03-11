@@ -106,7 +106,7 @@ Formato:
 ]`;
 
     const payload = {
-      model: 'minimax-m2.5:cloud',
+      model: 'gpt-oss:20b-cloud',
       prompt: prompt,
       stream: false,
       format: 'json'
