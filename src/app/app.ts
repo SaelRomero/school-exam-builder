@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { timeout } from 'rxjs/operators';
 import { Question } from './models';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, NumberFormat, LevelFormat, AlignmentType } from 'docx';
 import html2pdf from 'html2pdf.js';
 
 @Component({
