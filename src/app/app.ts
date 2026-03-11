@@ -91,6 +91,62 @@ export class AppComponent {
   }
 
 
+  
+  toggleQuestionType(q: Question) {
+    const newType = q.type === 'open' ? 'multiple' : 'open';
+    let newOptions = q.options;
+    
+    // Si la convertimos a multiple y no tiene opciones, le generamos unas falsas temporales
+    if (newType === 'multiple' && (!q.options || q.options.length === 0)) {
+      newOptions = [q.answer || 'Opción A', 'Opción B', 'Opción C'];
+    }
+
+    const updated = this.examQuestions().map(item => 
+      item.id === q.id ? { ...item, type: newType, options: newType === 'open' ? undefined : newOptions } : item
+    );
+    this.examQuestions.set(updated);
+    this.showToast('Tipo de pregunta cambiado');
+  }
+
+  async regenerateQuestion(q: Question) {
+    this.isGenerating.set(true);
+    this.showToast('Regenerando pregunta con IA...');
+    
+    const prompt = `Improve, rewrite or generate a better version of this exam question. The output must be valid JSON in this exact format. 
+DO NOT USE MARKDOWN BLOCK QUOTES AROUND THE JSON. NO OTHER TEXT. JUST RAW JSON.
+Format:
+{ "text": "The actual question", "type": "${q.type}", "options": ["opt1", "opt2", "opt3"], "answer": "The correct answer" }
+
+Original Question: "${q.text}"`;
+
+    try {
+      const response = await fetch('/api/ollama/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'gpt-oss:20b-cloud',
+          prompt: prompt,
+          stream: false,
+          format: 'json'
+        })
+      });
+
+      const data = await response.json();
+      let newQ = JSON.parse(data.response);
+      
+      const updated = this.examQuestions().map(item => 
+        item.id === q.id ? { ...item, text: newQ.text, answer: newQ.answer, options: newQ.type === 'multiple' ? newQ.options : undefined } : item
+      );
+      this.examQuestions.set(updated);
+      this.showToast('Pregunta regenerada con éxito');
+    } catch (e) {
+      console.error(e);
+      this.showToast('Error al regenerar pregunta. Intenta de nuevo.');
+    } finally {
+      this.isGenerating.set(false);
+    }
+  }
+
   removeQuestion(id: string) {
     this.examQuestions.set(this.examQuestions().filter(q => q.id !== id));
   }
